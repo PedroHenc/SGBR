@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart2, Briefcase, Settings, ShoppingCart } from "lucide-react";
+import { BarChart2, Briefcase, Settings } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,6 +26,7 @@ import {
   SidebarFooter,
 } from "@/components/ui/sidebar";
 import { ThemeSwitcher } from "./theme-switcher";
+import { Logo } from "./logo";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: BarChart2 },
@@ -40,9 +41,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       <Sidebar side="left" collapsible="icon" className="border-r bg-card">
         <SidebarHeader className="p-4">
           <Link href="/" className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg bg-primary">
-              <ShoppingCart className="w-6 h-6 text-primary-foreground" />
-            </div>
+            <Logo className="w-7 h-7" />
             <span className="text-xl font-semibold group-data-[collapsible=icon]:hidden">
               Atacadão SA
             </span>
