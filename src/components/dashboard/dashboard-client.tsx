@@ -12,6 +12,7 @@ import { EditTransactionDialog } from '@/components/dashboard/edit-transaction-d
 import type { Transaction, Category, Collaborator } from '@/lib/types';
 import { format } from 'date-fns';
 import { TeamCard } from './team-card';
+import { DailyRevenueCard } from './daily-revenue-card';
 
 interface DashboardClientProps {
   initialTransactions: Transaction[];
@@ -167,6 +168,7 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
           
           <div className="lg:col-span-3 space-y-6">
             <TeamCard collaborators={collaborators} />
+            <DailyRevenueCard totalRevenue={totalRevenue} />
           </div>
         </div>
       </div>
