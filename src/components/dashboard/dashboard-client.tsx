@@ -13,6 +13,7 @@ import type { Transaction, Category, Collaborator } from '@/lib/types';
 import { format } from 'date-fns';
 import { TeamCard } from './team-card';
 import { DailyRevenueCard } from './daily-revenue-card';
+import { cn } from '@/lib/utils';
 
 interface DashboardClientProps {
   initialTransactions: Transaction[];
@@ -40,6 +41,7 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
   
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
+  const [animatedRowId, setAnimatedRowId] = useState<string | null>(null);
 
   const [isClient, setIsClient] = useState(false)
 
@@ -69,12 +71,15 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
   };
 
   const handleAddTransaction = (newTransaction: Omit<Transaction, 'id' | 'date'>) => {
+    const newId = String(transactions.length + 1);
     setTransactions(prev =>
       [
-        { ...newTransaction, id: String(prev.length + 1), date: new Date() },
+        { ...newTransaction, id: newId, date: new Date() },
         ...prev
       ].sort((a, b) => b.date.getTime() - a.date.getTime())
     );
+    setAnimatedRowId(newId);
+    setTimeout(() => setAnimatedRowId(null), 1000);
   };
 
   const handleEditTransaction = (updatedTransaction: Transaction) => {
@@ -132,7 +137,7 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
                   {transactions.slice(0, 5).map(t => {
                     const category = getCategory(t.categoryId);
                     return (
-                      <TableRow key={t.id}>
+                      <TableRow key={t.id} className={cn(animatedRowId === t.id && 'animate-row-cascade')}>
                         <TableCell>
                           <div className="font-medium">{t.description}</div>
                           {isClient && <div className="text-sm text-muted-foreground">{format(new Date(t.date), 'dd/MM/yyyy HH:mm')}</div>}

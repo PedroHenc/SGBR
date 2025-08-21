@@ -67,3 +67,20 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .animate-row-cascade {
+    animation: row-cascade 0.5s ease-out forwards;
+  }
+
+  @keyframes row-cascade {
+    0% {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
