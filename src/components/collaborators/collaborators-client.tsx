@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHeader, TableRow, TableHead } from '@/components/ui/table';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from "@/hooks/use-toast";
 import type { Collaborator } from '@/lib/types';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
@@ -17,18 +18,19 @@ import { EditCollaboratorDialog } from './edit-collaborator-dialog';
 
 interface CollaboratorsClientProps {
   initialCollaborators: Collaborator[];
+  availableRoles: string[];
 }
 
 const formSchema = z.object({
   name: z.string().min(2, {
     message: "O nome do colaborador deve ter pelo menos 2 caracteres.",
   }),
-  role: z.string().min(2, {
-    message: "O cargo deve ter pelo menos 2 caracteres.",
+  role: z.string().min(1, {
+    message: "Por favor, selecione um cargo.",
   }),
 });
 
-export function CollaboratorsClient({ initialCollaborators }: CollaboratorsClientProps) {
+export function CollaboratorsClient({ initialCollaborators, availableRoles }: CollaboratorsClientProps) {
   const [collaborators, setCollaborators] = useState<Collaborator[]>(initialCollaborators);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedCollaborator, setSelectedCollaborator] = useState<Collaborator | null>(null);
@@ -103,9 +105,18 @@ export function CollaboratorsClient({ initialCollaborators }: CollaboratorsClien
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Cargo do Colaborador</FormLabel>
-                          <FormControl>
-                            <Input placeholder="ex: Desenvolvedor" {...field} />
-                          </FormControl>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Selecione um cargo" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {availableRoles.map(role => (
+                                <SelectItem key={role} value={role}>{role}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -172,6 +183,7 @@ export function CollaboratorsClient({ initialCollaborators }: CollaboratorsClien
         onEditCollaborator={handleEditCollaborator}
         open={isEditDialogOpen}
         onOpenChange={setIsEditDialogOpen}
+        availableRoles={availableRoles}
       />
     </>
   );

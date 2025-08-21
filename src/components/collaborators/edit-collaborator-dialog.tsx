@@ -23,6 +23,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from "@/hooks/use-toast";
 import type { Collaborator } from '@/lib/types';
 
@@ -31,18 +32,19 @@ interface EditCollaboratorDialogProps {
   onEditCollaborator: (collaborator: Collaborator) => void;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  availableRoles: string[];
 }
 
 const formSchema = z.object({
   name: z.string().min(2, {
     message: "O nome do colaborador deve ter pelo menos 2 caracteres.",
   }),
-  role: z.string().min(2, {
-    message: "O cargo deve ter pelo menos 2 caracteres.",
+  role: z.string().min(1, {
+    message: "Por favor, selecione um cargo.",
   }),
 });
 
-export function EditCollaboratorDialog({ collaborator, onEditCollaborator, open, onOpenChange }: EditCollaboratorDialogProps) {
+export function EditCollaboratorDialog({ collaborator, onEditCollaborator, open, onOpenChange, availableRoles }: EditCollaboratorDialogProps) {
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -104,9 +106,18 @@ export function EditCollaboratorDialog({ collaborator, onEditCollaborator, open,
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Cargo do Colaborador</FormLabel>
-                    <FormControl>
-                      <Input placeholder="ex: Desenvolvedor" {...field} />
-                    </FormControl>
+                     <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione um cargo" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {availableRoles.map(role => (
+                            <SelectItem key={role} value={role}>{role}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     <FormMessage />
                   </FormItem>
                 )}
