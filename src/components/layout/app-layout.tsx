@@ -28,7 +28,7 @@ import {
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: BarChart2 },
-  { href: "/categories", label: "Categories", icon: Briefcase },
+  { href: "/categories", label: "Categorias", icon: Briefcase },
 ];
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
@@ -74,7 +74,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                   <AvatarFallback>AU</AvatarFallback>
                 </Avatar>
                 <div className="text-left group-data-[collapsible=icon]:hidden">
-                  <p className="font-medium text-sm">Admin User</p>
+                  <p className="font-medium text-sm">Usuário Admin</p>
                   <p className="text-xs text-muted-foreground">admin@bizsight.com</p>
                 </div>
               </Button>
@@ -82,7 +82,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             <DropdownMenuContent className="w-56" align="end" forceMount>
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium leading-none">Admin User</p>
+                  <p className="text-sm font-medium leading-none">Usuário Admin</p>
                   <p className="text-xs leading-none text-muted-foreground">
                     admin@bizsight.com
                   </p>
@@ -91,9 +91,9 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               <DropdownMenuSeparator />
               <DropdownMenuItem>
                 <Settings className="mr-2 h-4 w-4" />
-                <span>Settings</span>
+                <span>Configurações</span>
               </DropdownMenuItem>
-              <DropdownMenuItem>Log out</DropdownMenuItem>
+              <DropdownMenuItem>Sair</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </SidebarFooter>

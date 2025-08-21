@@ -19,7 +19,7 @@ interface CategoriesClientProps {
 
 const formSchema = z.object({
   name: z.string().min(2, {
-    message: "Category name must be at least 2 characters.",
+    message: "O nome da categoria deve ter pelo menos 2 caracteres.",
   }),
 });
 
@@ -41,8 +41,8 @@ export function CategoriesClient({ initialCategories }: CategoriesClientProps) {
     };
     setCategories(prev => [...prev, newCategory]);
     toast({
-      title: "Category Added",
-      description: `Successfully added "${values.name}".`,
+      title: "Categoria Adicionada",
+      description: `Categoria "${values.name}" adicionada com sucesso.`,
     });
     form.reset();
   }
@@ -50,15 +50,15 @@ export function CategoriesClient({ initialCategories }: CategoriesClientProps) {
   return (
     <div className="space-y-6">
        <div>
-        <h1 className="text-2xl font-bold tracking-tight">Manage Categories</h1>
-        <p className="text-muted-foreground">Add new categories or view existing ones.</p>
+        <h1 className="text-2xl font-bold tracking-tight">Gerenciar Categorias</h1>
+        <p className="text-muted-foreground">Adicione novas categorias ou visualize as existentes.</p>
       </div>
       <div className="grid gap-6 md:grid-cols-5">
         <div className="md:col-span-2">
           <Card>
             <CardHeader>
-              <CardTitle>Add New Category</CardTitle>
-              <CardDescription>Create a new category for your transactions.</CardDescription>
+              <CardTitle>Adicionar Nova Categoria</CardTitle>
+              <CardDescription>Crie uma nova categoria para suas transações.</CardDescription>
             </CardHeader>
             <CardContent>
               <Form {...form}>
@@ -68,9 +68,9 @@ export function CategoriesClient({ initialCategories }: CategoriesClientProps) {
                     name="name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Category Name</FormLabel>
+                        <FormLabel>Nome da Categoria</FormLabel>
                         <FormControl>
-                          <Input placeholder="e.g. Marketing" {...field} />
+                          <Input placeholder="ex: Marketing" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -82,7 +82,7 @@ export function CategoriesClient({ initialCategories }: CategoriesClientProps) {
                     ) : (
                       <Plus className="mr-2 h-4 w-4" />
                     )}
-                    Add Category
+                    Adicionar Categoria
                   </Button>
                 </form>
               </Form>
@@ -93,14 +93,14 @@ export function CategoriesClient({ initialCategories }: CategoriesClientProps) {
         <div className="md:col-span-3">
           <Card>
             <CardHeader>
-              <CardTitle>Existing Categories</CardTitle>
-              <CardDescription>Here are all your current transaction categories.</CardDescription>
+              <CardTitle>Categorias Existentes</CardTitle>
+              <CardDescription>Aqui estão todas as suas categorias de transação atuais.</CardDescription>
             </CardHeader>
             <CardContent>
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Name</TableHead>
+                    <TableHead>Nome</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>

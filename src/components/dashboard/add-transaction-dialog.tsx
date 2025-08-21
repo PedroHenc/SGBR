@@ -44,13 +44,13 @@ interface AddTransactionDialogProps {
 
 const formSchema = z.object({
   description: z.string().min(2, {
-    message: "Description must be at least 2 characters.",
+    message: "A descrição deve ter pelo menos 2 caracteres.",
   }),
   amount: z.coerce.number().positive({
-    message: "Amount must be a positive number.",
+    message: "O valor deve ser um número positivo.",
   }),
   categoryId: z.string().min(1, {
-    message: "Please select a category.",
+    message: "Por favor, selecione uma categoria.",
   }),
 });
 
@@ -79,11 +79,11 @@ export function AddTransactionDialog({ type, categories, onAddTransaction }: Add
         });
         setSuggestions(result.suggestedCategories);
       } catch (error) {
-        console.error("AI suggestion error:", error);
+        console.error("Erro na sugestão da IA:", error);
         toast({
           variant: "destructive",
-          title: "AI Error",
-          description: "Could not fetch category suggestions.",
+          title: "Erro da IA",
+          description: "Não foi possível buscar sugestões de categoria.",
         });
       } finally {
         setIsLoadingSuggestions(false);
@@ -96,16 +96,16 @@ export function AddTransactionDialog({ type, categories, onAddTransaction }: Add
   function onSubmit(values: z.infer<typeof formSchema>) {
     onAddTransaction({ ...values, type });
     toast({
-      title: `${type === 'revenue' ? 'Revenue' : 'Expense'} Added`,
-      description: `Added "${values.description}" for $${values.amount}.`,
+      title: `${type === 'revenue' ? 'Receita' : 'Despesa'} Adicionada`,
+      description: `Adicionado "${values.description}" no valor de R$${values.amount}.`,
     });
     setOpen(false);
     form.reset();
     setSuggestions([]);
   }
   
-  const title = type === 'revenue' ? 'Add Revenue' : 'Add Expense';
-  const description = `Enter the details for your new ${type}.`;
+  const title = type === 'revenue' ? 'Adicionar Receita' : 'Adicionar Despesa';
+  const description = `Insira os detalhes para sua nova ${type === 'revenue' ? 'receita' : 'despesa'}.`;
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => {
@@ -132,9 +132,9 @@ export function AddTransactionDialog({ type, categories, onAddTransaction }: Add
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>Descrição</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g. Monthly server cost" {...field} onChange={(e) => {
+                    <Input placeholder="ex: Custo mensal do servidor" {...field} onChange={(e) => {
                       field.onChange(e);
                       handleDescriptionChange(e.target.value);
                     }} />
@@ -148,9 +148,9 @@ export function AddTransactionDialog({ type, categories, onAddTransaction }: Add
               name="amount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Amount ($)</FormLabel>
+                  <FormLabel>Valor (R$)</FormLabel>
                   <FormControl>
-                    <Input type="number" step="0.01" placeholder="0.00" {...field} />
+                    <Input type="number" step="0.01" placeholder="0,00" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -161,11 +161,11 @@ export function AddTransactionDialog({ type, categories, onAddTransaction }: Add
               name="categoryId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Category</FormLabel>
+                  <FormLabel>Categoria</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a category" />
+                        <SelectValue placeholder="Selecione uma categoria" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -181,10 +181,10 @@ export function AddTransactionDialog({ type, categories, onAddTransaction }: Add
 
             {(isLoadingSuggestions || suggestions.length > 0) && (
               <div className="space-y-2">
-                <FormLabel>AI Suggestions</FormLabel>
+                <FormLabel>Sugestões da IA</FormLabel>
                 <div className="flex flex-wrap gap-2">
                   {isLoadingSuggestions ? (
-                    <Badge variant="outline"><Loader2 className="mr-2 h-3 w-3 animate-spin" /> Thinking...</Badge>
+                    <Badge variant="outline"><Loader2 className="mr-2 h-3 w-3 animate-spin" /> Pensando...</Badge>
                   ) : (
                     suggestions.map(suggestion => {
                       const category = categories.find(c => c.name === suggestion);
@@ -207,7 +207,7 @@ export function AddTransactionDialog({ type, categories, onAddTransaction }: Add
             <DialogFooter>
               <Button type="submit" disabled={form.formState.isSubmitting}>
                 {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Add {type}
+                Adicionar {type === 'revenue' ? 'Receita' : 'Despesa'}
               </Button>
             </DialogFooter>
           </form>
