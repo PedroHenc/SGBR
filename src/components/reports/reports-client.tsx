@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -78,7 +79,7 @@ export function ReportsClient({ initialTransactions, initialCategories }: Report
     if (link.download !== undefined) {
       const url = URL.createObjectURL(blob);
       link.setAttribute("href", url);
-      link.setAttribute("download", "transacoes.csv");
+      link.setAttribute("download", "relatorios.csv");
       link.style.visibility = 'hidden';
       document.body.appendChild(link);
       link.click();

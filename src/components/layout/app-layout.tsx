@@ -107,9 +107,9 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         <header className="sticky top-0 z-10 flex h-14 items-center justify-between gap-4 border-b bg-background/80 backdrop-blur-sm px-4 sm:px-6">
           <SidebarTrigger className="sm:hidden" />
           <div className="flex flex-1 items-center justify-end">
-            <Button asChild size="default">
+            <Button asChild color="red" size="lg">
               <a href="https://google.com" target="_blank" rel="noopener noreferrer">
-                <ExternalLink className="mr-2 h-4 w-4" />
+                <ExternalLink className="mr-2 h-4 w-6" />
                 Trabalhar
               </a>
             </Button>
