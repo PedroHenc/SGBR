@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { DollarSign, TrendingUp, TrendingDown, Edit } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -11,7 +11,7 @@ import { AddTransactionDialog } from '@/components/dashboard/add-transaction-dia
 import { EditTransactionDialog } from '@/components/dashboard/edit-transaction-dialog';
 import type { Transaction, Category, Appointment } from '@/lib/types';
 import { DateRange } from 'react-day-picker';
-import { addDays, subDays } from 'date-fns';
+import { addDays, format } from 'date-fns';
 
 interface DashboardClientProps {
   initialTransactions: Transaction[];
@@ -33,9 +33,9 @@ const StatCard = ({ title, value, icon: Icon, trend, trendColor }: { title: stri
 );
 
 export function DashboardClient({ initialTransactions, initialCategories, initialAppointments }: DashboardClientProps) {
-  const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions);
+  const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions.map(t => ({...t, date: new Date(t.date)})));
   const [categories, setCategories] = useState<Category[]>(initialCategories);
-  const [appointments, setAppointments] = useState<Appointment[]>(initialAppointments);
+  const [appointments, setAppointments] = useState<Appointment[]>(initialAppointments.map(a => ({...a, date: new Date(a.date)})));
   const [date, setDate] = useState<DateRange | undefined>({
     from: new Date(),
     to: addDays(new Date(), 7),
@@ -43,6 +43,12 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
 
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
+
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   const { totalRevenue, totalExpenses, profit } = useMemo(() => {
     const revenue = transactions
@@ -130,7 +136,7 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
                       <TableRow key={t.id}>
                         <TableCell>
                           <div className="font-medium">{t.description}</div>
-                          <div className="text-sm text-muted-foreground">{t.date.toLocaleDateString('pt-BR')}</div>
+                          {isClient && <div className="text-sm text-muted-foreground">{format(t.date, 'dd/MM/yyyy')}</div>}
                         </TableCell>
                         <TableCell>
                           <Badge 

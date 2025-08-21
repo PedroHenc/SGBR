@@ -4,11 +4,11 @@ import type { Transaction, Category, Appointment } from "@/lib/types";
 
 // In a real app, this data would come from a database
 const mockTransactions: Transaction[] = [
-  { id: '1', type: 'revenue', description: 'Projeto de web design para Acme Corp', amount: 2500, date: new Date('2024-07-01'), categoryId: '1' },
-  { id: '2', type: 'expense', description: 'Assinatura mensal da Adobe Creative Cloud', amount: 99, date: new Date('2024-07-03'), categoryId: '3' },
-  { id: '3', type: 'revenue', description: 'Serviços de consultoria para Tech Solutions', amount: 1200, date: new Date('2024-07-10'), categoryId: '2' },
-  { id: '4', type: 'expense', description: 'Material de escritório da Staples', amount: 150, date: new Date('2024-07-12'), categoryId: '4' },
-  { id: '5', type: 'expense', description: 'Hospedagem Vercel para o site da empresa', amount: 75, date: new Date('2024-07-15'), categoryId: '3' },
+  { id: '1', type: 'revenue', description: 'Projeto de web design para Acme Corp', amount: 2500, date: new Date('2024-07-01T00:00:00'), categoryId: '1' },
+  { id: '2', type: 'expense', description: 'Assinatura mensal da Adobe Creative Cloud', amount: 99, date: new Date('2024-07-03T00:00:00'), categoryId: '3' },
+  { id: '3', type: 'revenue', description: 'Serviços de consultoria para Tech Solutions', amount: 1200, date: new Date('2024-07-10T00:00:00'), categoryId: '2' },
+  { id: '4', type: 'expense', description: 'Material de escritório da Staples', amount: 150, date: new Date('2024-07-12T00:00:00'), categoryId: '4' },
+  { id: '5', type: 'expense', description: 'Hospedagem Vercel para o site da empresa', amount: 75, date: new Date('2024-07-15T00:00:00'), categoryId: '3' },
 ];
 
 const mockCategories: Category[] = [
@@ -21,9 +21,9 @@ const mockCategories: Category[] = [
 ];
 
 const mockAppointments: Appointment[] = [
-  { id: '1', title: 'Reunião com cliente Acme Corp', date: new Date('2024-07-15') },
-  { id: '2', title: 'Prazo final do projeto para Tech Solutions', date: new Date('2024-07-22') },
-  { id: '3', title: 'Sincronização da equipe: Planejamento Q3', date: new Date('2024-07-18') },
+  { id: '1', title: 'Reunião com cliente Acme Corp', date: new Date('2024-07-15T00:00:00') },
+  { id: '2', title: 'Prazo final do projeto para Tech Solutions', date: new Date('2024-07-22T00:00:00') },
+  { id: '3', title: 'Sincronização da equipe: Planejamento Q3', date: new Date('2024-07-18T00:00:00') },
 ];
 
 export default function DashboardPage() {
