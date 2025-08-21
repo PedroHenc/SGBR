@@ -2,20 +2,16 @@
 "use client";
 
 import { useState, useMemo, useEffect } from 'react';
-import { DollarSign, TrendingUp, TrendingDown, Edit, CalendarIcon } from 'lucide-react';
+import { DollarSign, TrendingUp, TrendingDown, Edit } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Calendar } from '@/components/ui/calendar';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
 import { AddTransactionDialog } from '@/components/dashboard/add-transaction-dialog';
 import { EditTransactionDialog } from '@/components/dashboard/edit-transaction-dialog';
 import type { Transaction, Category } from '@/lib/types';
-import { DateRange } from 'react-day-picker';
-import { addDays, format, startOfDay, endOfDay } from 'date-fns';
+import { format } from 'date-fns';
 import { DailyRevenueCard } from './daily-revenue-card';
-import { cn } from '@/lib/utils';
 
 interface DashboardClientProps {
   initialTransactions: Transaction[];
@@ -39,12 +35,6 @@ export function DashboardClient({ initialTransactions, initialCategories }: Dash
   const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions.map(t => ({...t, date: new Date(t.date)})));
   const [categories] = useState<Category[]>(initialCategories);
   
-  const today = new Date();
-  const [date, setDate] = useState<DateRange | undefined>({
-    from: startOfDay(addDays(today, -30)),
-    to: endOfDay(today),
-  });
-
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
 
@@ -54,21 +44,11 @@ export function DashboardClient({ initialTransactions, initialCategories }: Dash
     setIsClient(true)
   }, [])
   
-  const filteredTransactions = useMemo(() => {
-    if (!date?.from) {
-      return transactions;
-    }
-    const from = startOfDay(date.from);
-    const to = date.to ? endOfDay(date.to) : endOfDay(date.from);
-    return transactions.filter(t => t.date >= from && t.date <= to);
-  }, [transactions, date]);
-
-
   const { totalRevenue, totalExpenses, profit } = useMemo(() => {
-    const revenue = filteredTransactions
+    const revenue = transactions
       .filter((t) => t.type === 'revenue')
       .reduce((sum, t) => sum + t.amount, 0);
-    const expenses = filteredTransactions
+    const expenses = transactions
       .filter((t) => t.type === 'expense')
       .reduce((sum, t) => sum + t.amount, 0);
     return {
@@ -76,7 +56,7 @@ export function DashboardClient({ initialTransactions, initialCategories }: Dash
       totalExpenses: expenses,
       profit: revenue - expenses,
     };
-  }, [filteredTransactions]);
+  }, [transactions]);
   
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -146,7 +126,7 @@ export function DashboardClient({ initialTransactions, initialCategories }: Dash
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredTransactions.slice(0, 5).map(t => {
+                  {transactions.slice(0, 5).map(t => {
                     const category = getCategory(t.categoryId);
                     return (
                       <TableRow key={t.id}>
@@ -184,53 +164,7 @@ export function DashboardClient({ initialTransactions, initialCategories }: Dash
           </Card>
           
           <div className="lg:col-span-3 space-y-6">
-            <DailyRevenueCard totalRevenue={totalRevenue} transactions={filteredTransactions} />
-            <Card>
-              <CardHeader>
-                <CardTitle>Filtrar por Data</CardTitle>
-                <CardDescription>Selecione um período para visualizar as transações.</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid gap-2">
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        id="date"
-                        variant={"outline"}
-                        className={cn(
-                          "w-full justify-start text-left font-normal",
-                          !date && "text-muted-foreground"
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {date?.from ? (
-                          date.to ? (
-                            <>
-                              {format(date.from, "dd/MM/y")} -{" "}
-                              {format(date.to, "dd/MM/y")}
-                            </>
-                          ) : (
-                            format(date.from, "dd/MM/y")
-                          )
-                        ) : (
-                          <span>Selecione uma data</span>
-                        )}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="end">
-                      <Calendar
-                        initialFocus
-                        mode="range"
-                        defaultMonth={date?.from}
-                        selected={date}
-                        onSelect={setDate}
-                        numberOfMonths={2}
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-              </CardContent>
-            </Card>
+            <DailyRevenueCard totalRevenue={totalRevenue} transactions={transactions} />
           </div>
         </div>
       </div>
