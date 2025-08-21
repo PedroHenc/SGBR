@@ -1,7 +1,7 @@
 
 import { AppLayout } from "@/components/layout/app-layout";
 import { DashboardClient } from "@/components/dashboard/dashboard-client";
-import type { Transaction, Category } from "@/lib/types";
+import type { Transaction, Category, Collaborator } from "@/lib/types";
 
 // In a real app, this data would come from a database
 const mockTransactions: Transaction[] = [
@@ -21,15 +21,24 @@ const mockCategories: Category[] = [
   { id: '6', name: 'Marketing', color: '#f59e0b' },
 ];
 
+const mockCollaborators: Collaborator[] = [
+    { id: '1', name: 'Ana Silva', role: 'Gerente' },
+    { id: '2', name: 'Carlos Oliveira', role: 'Diretor(a) Financeiro(a)' },
+    { id: '3', name: 'Beatriz Costa', role: 'Trainee' },
+    { id: '4', name: 'Daniel Martins', role: 'Painter' },
+];
+
 export default function DashboardPage() {
   const transactions = mockTransactions;
   const categories = mockCategories;
+  const collaborators = mockCollaborators;
 
   return (
     <AppLayout>
       <DashboardClient
         initialTransactions={transactions}
         initialCategories={categories}
+        initialCollaborators={collaborators}
       />
     </AppLayout>
   );

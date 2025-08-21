@@ -9,13 +9,14 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { AddTransactionDialog } from '@/components/dashboard/add-transaction-dialog';
 import { EditTransactionDialog } from '@/components/dashboard/edit-transaction-dialog';
-import type { Transaction, Category } from '@/lib/types';
+import type { Transaction, Category, Collaborator } from '@/lib/types';
 import { format } from 'date-fns';
-import { DailyRevenueCard } from './daily-revenue-card';
+import { TeamCard } from './team-card';
 
 interface DashboardClientProps {
   initialTransactions: Transaction[];
   initialCategories: Category[];
+  initialCollaborators: Collaborator[];
 }
 
 const StatCard = ({ title, value, icon: Icon, trend, trendColor }: { title: string, value: string, icon: React.ElementType, trend?: string, trendColor?: string }) => (
@@ -31,9 +32,10 @@ const StatCard = ({ title, value, icon: Icon, trend, trendColor }: { title: stri
   </Card>
 );
 
-export function DashboardClient({ initialTransactions, initialCategories }: DashboardClientProps) {
+export function DashboardClient({ initialTransactions, initialCategories, initialCollaborators }: DashboardClientProps) {
   const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions.map(t => ({...t, date: new Date(t.date)})));
   const [categories] = useState<Category[]>(initialCategories);
+  const [collaborators] = useState<Collaborator[]>(initialCollaborators);
   
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
@@ -164,7 +166,7 @@ export function DashboardClient({ initialTransactions, initialCategories }: Dash
           </Card>
           
           <div className="lg:col-span-3 space-y-6">
-            <DailyRevenueCard totalRevenue={totalRevenue} transactions={transactions} />
+            <TeamCard collaborators={collaborators} />
           </div>
         </div>
       </div>
