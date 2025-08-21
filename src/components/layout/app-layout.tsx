@@ -30,7 +30,7 @@ import { Logo } from "./logo";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: BarChart2 },
-  { href: "/transactions", label: "Transações", icon: List },
+  { href: "/reports", label: "Relatórios", icon: List },
   { href: "/categories", label: "Categorias", icon: Briefcase },
   { href: "/collaborators", label: "Colaboradores", icon: Users },
 ];

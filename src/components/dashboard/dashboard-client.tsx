@@ -115,7 +115,7 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
           <Card className="lg:col-span-4">
             <CardHeader>
-              <CardTitle>Transações Recentes</CardTitle>
+              <CardTitle>Relatórios Recentes</CardTitle>
               <CardDescription>Uma visão geral de suas últimas atividades financeiras.</CardDescription>
             </CardHeader>
             <CardContent>
