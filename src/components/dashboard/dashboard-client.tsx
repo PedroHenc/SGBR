@@ -37,7 +37,7 @@ const StatCard = ({ title, value, icon: Icon, trend, trendColor }: { title: stri
 
 export function DashboardClient({ initialTransactions, initialCategories }: DashboardClientProps) {
   const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions.map(t => ({...t, date: new Date(t.date)})));
-  const [categories, setCategories] = useState<Category[]>(initialCategories);
+  const [categories] = useState<Category[]>(initialCategories);
   
   const today = new Date();
   const [date, setDate] = useState<DateRange | undefined>({
@@ -152,7 +152,7 @@ export function DashboardClient({ initialTransactions, initialCategories }: Dash
                       <TableRow key={t.id}>
                         <TableCell>
                           <div className="font-medium">{t.description}</div>
-                          {isClient && <div className="text-sm text-muted-foreground">{format(t.date, 'dd/MM/yyyy HH:mm')}</div>}
+                          {isClient && <div className="text-sm text-muted-foreground">{format(new Date(t.date), 'dd/MM/yyyy HH:mm')}</div>}
                         </TableCell>
                         <TableCell>
                           <Badge 
