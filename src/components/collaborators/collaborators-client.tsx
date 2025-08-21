@@ -13,16 +13,22 @@ import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHeader, TableRow, TableHead } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from "@/hooks/use-toast";
-import type { Collaborator } from '@/lib/types';
+import type { Collaborator, Skill } from '@/lib/types';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { EditCollaboratorDialog } from './edit-collaborator-dialog';
 import { DeleteCollaboratorDialog } from './delete-collaborator-dialog';
 import { Label } from '../ui/label';
 import { cn } from '@/lib/utils';
+import { Badge } from '../ui/badge';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '../ui/command';
+import { Check } from 'lucide-react';
+import { ScrollArea } from '../ui/scroll-area';
 
 interface CollaboratorsClientProps {
   initialCollaborators: Collaborator[];
   availableRoles: string[];
+  availableSkills: Skill[];
 }
 
 const formSchema = z.object({
@@ -33,9 +39,10 @@ const formSchema = z.object({
     message: "Por favor, selecione um cargo.",
   }),
   avatarUrl: z.string().optional(),
+  skills: z.array(z.string()).optional(),
 });
 
-export function CollaboratorsClient({ initialCollaborators, availableRoles }: CollaboratorsClientProps) {
+export function CollaboratorsClient({ initialCollaborators, availableRoles, availableSkills }: CollaboratorsClientProps) {
   const [collaborators, setCollaborators] = useState<Collaborator[]>(initialCollaborators);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -50,6 +57,7 @@ export function CollaboratorsClient({ initialCollaborators, availableRoles }: Co
       name: "",
       role: "",
       avatarUrl: "",
+      skills: [],
     },
   });
   
@@ -59,6 +67,7 @@ export function CollaboratorsClient({ initialCollaborators, availableRoles }: Co
       name: values.name,
       role: values.role,
       avatarUrl: preview || values.avatarUrl,
+      skills: values.skills,
     };
     setCollaborators(prev => [...prev, newCollaborator]);
     toast({
@@ -114,6 +123,10 @@ export function CollaboratorsClient({ initialCollaborators, availableRoles }: Co
         fileInputRef.current.value = "";
     }
   }
+
+  const getSkillName = (skillId: string) => {
+    return availableSkills.find(s => s.id === skillId)?.name || 'Desconhecida';
+  };
 
 
   return (
@@ -195,6 +208,71 @@ export function CollaboratorsClient({ initialCollaborators, availableRoles }: Co
                         </FormItem>
                       )}
                     />
+                    <FormField
+                      control={form.control}
+                      name="skills"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-col">
+                          <FormLabel>Competências</FormLabel>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <FormControl>
+                                <Button
+                                  variant="outline"
+                                  role="combobox"
+                                  className={cn(
+                                    "w-full justify-between",
+                                    !field.value?.length && "text-muted-foreground"
+                                  )}
+                                >
+                                  <div className="flex gap-1 flex-wrap">
+                                    {field.value?.length > 0 ? (
+                                      field.value.map(skillId => (
+                                        <Badge key={skillId} variant="secondary">{getSkillName(skillId)}</Badge>
+                                      ))
+                                    ) : (
+                                      "Selecione as competências"
+                                    )}
+                                  </div>
+                                </Button>
+                              </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                               <Command>
+                                <CommandInput placeholder="Buscar competência..." />
+                                <CommandEmpty>Nenhuma competência encontrada.</CommandEmpty>
+                                <CommandGroup>
+                                  <ScrollArea className="h-48">
+                                    {availableSkills.map((skill) => (
+                                      <CommandItem
+                                        value={skill.name}
+                                        key={skill.id}
+                                        onSelect={() => {
+                                          const currentSkills = field.value || [];
+                                          const newSkills = currentSkills.includes(skill.id)
+                                            ? currentSkills.filter(s => s !== skill.id)
+                                            : [...currentSkills, skill.id];
+                                          field.onChange(newSkills);
+                                        }}
+                                      >
+                                        <Check
+                                          className={cn(
+                                            "mr-2 h-4 w-4",
+                                            field.value?.includes(skill.id) ? "opacity-100" : "opacity-0"
+                                          )}
+                                        />
+                                        {skill.name}
+                                      </CommandItem>
+                                    ))}
+                                  </ScrollArea>
+                                </CommandGroup>
+                               </Command>
+                            </PopoverContent>
+                          </Popover>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                     <Button type="submit" disabled={form.formState.isSubmitting}>
                       {form.formState.isSubmitting ? (
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -221,6 +299,7 @@ export function CollaboratorsClient({ initialCollaborators, availableRoles }: Co
                     <TableRow>
                       <TableHead>Nome</TableHead>
                       <TableHead>Cargo</TableHead>
+                      <TableHead>Competências</TableHead>
                       <TableHead className="text-right">Ações</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -237,6 +316,13 @@ export function CollaboratorsClient({ initialCollaborators, availableRoles }: Co
                           </div>
                         </TableCell>
                         <TableCell>{collaborator.role}</TableCell>
+                        <TableCell>
+                          <div className="flex flex-wrap gap-1">
+                            {collaborator.skills?.map(skillId => (
+                               <Badge key={skillId} variant="outline">{getSkillName(skillId)}</Badge>
+                            ))}
+                          </div>
+                        </TableCell>
                         <TableCell className="text-right">
                           <Button variant="ghost" size="icon" onClick={() => openEditDialog(collaborator)}>
                             <Edit className="h-4 w-4" />
@@ -262,6 +348,7 @@ export function CollaboratorsClient({ initialCollaborators, availableRoles }: Co
         open={isEditDialogOpen}
         onOpenChange={setIsEditDialogOpen}
         availableRoles={availableRoles}
+        availableSkills={availableSkills}
       />
       <DeleteCollaboratorDialog
         collaborator={selectedCollaborator}
@@ -272,5 +359,3 @@ export function CollaboratorsClient({ initialCollaborators, availableRoles }: Co
     </>
   );
 }
-
-    
