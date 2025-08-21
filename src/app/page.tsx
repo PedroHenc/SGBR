@@ -12,12 +12,12 @@ const mockTransactions: Transaction[] = [
 ];
 
 const mockCategories: Category[] = [
-  { id: '1', name: 'Desenvolvimento Web' },
-  { id: '2', name: 'Consultoria' },
-  { id: '3', name: 'Software' },
-  { id: '4', name: 'Material de Escritório' },
-  { id: '5', name: 'Utilidades' },
-  { id: '6', name: 'Marketing' },
+  { id: '1', name: 'Desenvolvimento Web', color: '#3b82f6' },
+  { id: '2', name: 'Consultoria', color: '#16a34a' },
+  { id: '3', name: 'Software', color: '#ea580c' },
+  { id: '4', name: 'Material de Escritório', color: '#7c3aed' },
+  { id: '5', name: 'Utilidades', color: '#db2777' },
+  { id: '6', name: 'Marketing', color: '#f59e0b' },
 ];
 
 const mockAppointments: Appointment[] = [

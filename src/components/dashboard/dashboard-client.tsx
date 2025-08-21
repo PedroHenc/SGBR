@@ -83,8 +83,8 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
     setIsEditDialogOpen(true);
   };
 
-  const getCategoryName = (categoryId: string) => {
-    return categories.find(c => c.id === categoryId)?.name || 'Sem categoria';
+  const getCategory = (categoryId: string) => {
+    return categories.find(c => c.id === categoryId);
   };
 
   return (
@@ -124,27 +124,38 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {transactions.slice(0, 5).map(t => (
-                    <TableRow key={t.id}>
-                      <TableCell>
-                        <div className="font-medium">{t.description}</div>
-                        <div className="text-sm text-muted-foreground">{t.date.toLocaleDateString('pt-BR')}</div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{getCategoryName(t.categoryId)}</Badge>
-                      </TableCell>
-                      <TableCell className={`text-right font-medium ${t.type === 'revenue' ? 'text-green-500' : 'text-red-500'}`}>
-                        {t.type === 'revenue' ? '+' : '-'}
-                        {formatCurrency(t.amount)}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button variant="ghost" size="icon" onClick={() => openEditDialog(t)}>
-                          <Edit className="h-4 w-4" />
-                          <span className="sr-only">Editar</span>
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {transactions.slice(0, 5).map(t => {
+                    const category = getCategory(t.categoryId);
+                    return (
+                      <TableRow key={t.id}>
+                        <TableCell>
+                          <div className="font-medium">{t.description}</div>
+                          <div className="text-sm text-muted-foreground">{t.date.toLocaleDateString('pt-BR')}</div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge 
+                            variant="outline"
+                            style={category ? {
+                              borderColor: category.color,
+                              color: category.color,
+                            } : {}}
+                          >
+                            {category?.name || 'Sem categoria'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className={`text-right font-medium ${t.type === 'revenue' ? 'text-green-500' : 'text-red-500'}`}>
+                          {t.type === 'revenue' ? '+' : '-'}
+                          {formatCurrency(t.amount)}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Button variant="ghost" size="icon" onClick={() => openEditDialog(t)}>
+                            <Edit className="h-4 w-4" />
+                            <span className="sr-only">Editar</span>
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </CardContent>

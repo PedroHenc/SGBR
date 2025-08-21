@@ -21,6 +21,9 @@ const formSchema = z.object({
   name: z.string().min(2, {
     message: "O nome da categoria deve ter pelo menos 2 caracteres.",
   }),
+  color: z.string().regex(/^#[0-9a-fA-F]{6}$/, {
+    message: "A cor deve estar no formato hexadecimal (ex: #RRGGBB).",
+  }),
 });
 
 export function CategoriesClient({ initialCategories }: CategoriesClientProps) {
@@ -31,6 +34,7 @@ export function CategoriesClient({ initialCategories }: CategoriesClientProps) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
+      color: "#000000",
     },
   });
   
@@ -38,6 +42,7 @@ export function CategoriesClient({ initialCategories }: CategoriesClientProps) {
     const newCategory: Category = {
       id: String(categories.length + 1),
       name: values.name,
+      color: values.color,
     };
     setCategories(prev => [...prev, newCategory]);
     toast({
@@ -76,6 +81,22 @@ export function CategoriesClient({ initialCategories }: CategoriesClientProps) {
                       </FormItem>
                     )}
                   />
+                  <FormField
+                    control={form.control}
+                    name="color"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Cor da Categoria</FormLabel>
+                        <FormControl>
+                          <div className="flex items-center gap-2">
+                            <Input type="color" className="w-12 h-10 p-1" {...field} />
+                            <Input placeholder="#RRGGBB" {...field} />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   <Button type="submit" disabled={form.formState.isSubmitting}>
                     {form.formState.isSubmitting ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -101,12 +122,19 @@ export function CategoriesClient({ initialCategories }: CategoriesClientProps) {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Nome</TableHead>
+                    <TableHead className="text-right">Cor</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {categories.map(category => (
                     <TableRow key={category.id}>
                       <TableCell className="font-medium">{category.name}</TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <span>{category.color}</span>
+                          <div className="w-5 h-5 rounded-full border" style={{ backgroundColor: category.color }} />
+                        </div>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
