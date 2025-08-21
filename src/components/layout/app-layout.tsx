@@ -25,6 +25,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
   SidebarFooter,
+  SidebarGroup,
 } from "@/components/ui/sidebar";
 import { ThemeSwitcher } from "./theme-switcher";
 import { Logo } from "./logo";
@@ -52,22 +53,24 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           </Link>
         </SidebarHeader>
         <SidebarContent>
-          <SidebarMenu>
-            {navItems.map((item) => (
-              <SidebarMenuItem key={item.href}>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname === item.href}
-                  tooltip={{ children: item.label }}
-                >
-                  <Link href={item.href}>
-                    <item.icon />
-                    <span>{item.label}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
+          <SidebarGroup>
+            <SidebarMenu>
+              {navItems.map((item) => (
+                <SidebarMenuItem key={item.href}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname === item.href}
+                    tooltip={{ children: item.label }}
+                  >
+                    <Link href={item.href}>
+                      <item.icon />
+                      <span>{item.label}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroup>
         </SidebarContent>
         <SidebarFooter className="p-2">
           <DropdownMenu>
