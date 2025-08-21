@@ -69,6 +69,13 @@ export function AddTransactionDialog({ type, categories, onAddTransaction }: Add
     },
   });
 
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    }).format(amount);
+  };
+
   async function handleDescriptionChange(description: string) {
     if (description.length > 3) {
       setIsLoadingSuggestions(true);
@@ -97,7 +104,7 @@ export function AddTransactionDialog({ type, categories, onAddTransaction }: Add
     onAddTransaction({ ...values, type });
     toast({
       title: `${type === 'revenue' ? 'Receita' : 'Despesa'} Adicionada`,
-      description: `Adicionado "${values.description}" no valor de R$${values.amount}.`,
+      description: `Adicionado "${values.description}" no valor de ${formatCurrency(values.amount)}.`,
     });
     setOpen(false);
     form.reset();
