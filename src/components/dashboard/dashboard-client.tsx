@@ -12,6 +12,7 @@ import { EditTransactionDialog } from '@/components/dashboard/edit-transaction-d
 import type { Transaction, Category, Appointment } from '@/lib/types';
 import { DateRange } from 'react-day-picker';
 import { addDays, format } from 'date-fns';
+import { DailyRevenueCard } from './daily-revenue-card';
 
 interface DashboardClientProps {
   initialTransactions: Transaction[];
@@ -167,29 +168,32 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
             </CardContent>
           </Card>
           
-          <Card className="lg:col-span-3">
-            <CardHeader>
-              <CardTitle>Agendamentos</CardTitle>
-              <CardDescription>Sua agenda para os próximos dias.</CardDescription>
-            </CardHeader>
-            <CardContent className="flex justify-center">
-              <Calendar
-                mode="range"
-                selected={date}
-                onSelect={setDate}
-                className="rounded-md"
-                modifiers={{
-                  events: appointments.map(a => a.date)
-                }}
-                modifiersStyles={{
-                  events: {
-                    color: 'hsl(var(--primary-foreground))',
-                    backgroundColor: 'hsl(var(--primary))',
-                  }
-                }}
-              />
-            </CardContent>
-          </Card>
+          <div className="lg:col-span-3 space-y-6">
+            <DailyRevenueCard totalRevenue={totalRevenue} transactions={transactions} />
+            <Card>
+              <CardHeader>
+                <CardTitle>Agendamentos</CardTitle>
+                <CardDescription>Sua agenda para os próximos dias.</CardDescription>
+              </CardHeader>
+              <CardContent className="flex justify-center">
+                <Calendar
+                  mode="range"
+                  selected={date}
+                  onSelect={setDate}
+                  className="rounded-md"
+                  modifiers={{
+                    events: appointments.map(a => a.date)
+                  }}
+                  modifiersStyles={{
+                    events: {
+                      color: 'hsl(var(--primary-foreground))',
+                      backgroundColor: 'hsl(var(--primary))',
+                    }
+                  }}
+                />
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
       <EditTransactionDialog
