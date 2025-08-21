@@ -1,8 +1,9 @@
+
 "use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart2, Briefcase, List, Settings, Users, Star } from "lucide-react";
+import { BarChart2, Briefcase, List, Settings, Users, Star, ExternalLink } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -36,6 +37,10 @@ const navItems = [
   { href: "/skills", label: "Competências", icon: Star },
 ];
 
+const externalNavItems = [
+    { href: "https://google.com", label: "Trabalhar", icon: ExternalLink },
+]
+
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
@@ -46,7 +51,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           <Link href="/" className="flex items-center gap-2">
             <Logo className="w-7 h-7" />
             <span className="text-xl font-semibold group-data-[collapsible=icon]:hidden">
-              Atacadão SA
+             Benny's Motorworks shop
             </span>
           </Link>
         </SidebarHeader>
@@ -63,6 +68,19 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                     <item.icon />
                     <span>{item.label}</span>
                   </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+             {externalNavItems.map((item) => (
+              <SidebarMenuItem key={item.href}>
+                <SidebarMenuButton
+                  asChild
+                  tooltip={{ children: item.label }}
+                >
+                  <a href={item.href} target="_blank" rel="noopener noreferrer">
+                    <item.icon />
+                    <span>{item.label}</span>
+                  </a>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
