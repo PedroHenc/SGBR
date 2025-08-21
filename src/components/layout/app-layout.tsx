@@ -25,6 +25,7 @@ import {
   SidebarTrigger,
   SidebarFooter,
 } from "@/components/ui/sidebar";
+import { ThemeSwitcher } from "./theme-switcher";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: BarChart2 },
@@ -89,6 +90,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
+              <ThemeSwitcher />
               <DropdownMenuItem>
                 <Settings className="mr-2 h-4 w-4" />
                 <span>Configurações</span>
