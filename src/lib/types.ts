@@ -20,3 +20,9 @@ export interface Appointment {
   title: string;
   date: Date;
 }
+
+export interface Collaborator {
+  id: string;
+  name: string;
+  role: string;
+}
