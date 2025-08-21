@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Edit } from 'lucide-react';
+import { Edit, FileDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -58,6 +58,34 @@ export function TransactionsClient({ initialTransactions, initialCategories }: T
     return categories.find(c => c.id === categoryId);
   };
 
+  const handleExportCSV = () => {
+    const csvHeader = ['Descrição', 'Tipo', 'Valor', 'Data', 'Categoria'].join(',');
+    const csvBody = transactions.map(t => {
+      const category = getCategory(t.categoryId);
+      return [
+        `"${t.description.replace(/"/g, '""')}"`,
+        t.type === 'revenue' ? 'Receita' : 'Despesa',
+        t.amount,
+        format(t.date, 'yyyy-MM-dd'),
+        `"${category?.name.replace(/"/g, '""') || 'Sem categoria'}"`
+      ].join(',');
+    }).join('\n');
+
+    const csvContent = `${csvHeader}\n${csvBody}`;
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", "transacoes.csv");
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
   return (
     <>
       <div className="flex flex-col gap-6">
@@ -67,6 +95,10 @@ export function TransactionsClient({ initialTransactions, initialCategories }: T
             <p className="text-muted-foreground">Visualize e gerencie todas as suas receitas e despesas.</p>
           </div>
           <div className="flex gap-2">
+            <Button onClick={handleExportCSV} variant="outline">
+              <FileDown className="mr-2 h-4 w-4" />
+              Exportar CSV
+            </Button>
             <AddTransactionDialog type="revenue" categories={categories} onAddTransaction={handleAddTransaction} />
             <AddTransactionDialog type="expense" categories={categories} onAddTransaction={handleAddTransaction} />
           </div>
