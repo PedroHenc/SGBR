@@ -73,10 +73,12 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
   };
 
   const handleAddTransaction = (newTransaction: Omit<Transaction, 'id' | 'date'>) => {
-    setTransactions(prev => [
-      { ...newTransaction, id: String(prev.length + 1), date: new Date() },
-      ...prev
-    ]);
+    setTransactions(prev =>
+      [
+        { ...newTransaction, id: String(prev.length + 1), date: new Date() },
+        ...prev
+      ].sort((a, b) => b.date.getTime() - a.date.getTime())
+    );
   };
 
   const handleEditTransaction = (updatedTransaction: Transaction) => {
