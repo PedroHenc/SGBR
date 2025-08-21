@@ -173,7 +173,7 @@ export function CollaboratorsClient({ initialCollaborators, availableRoles }: Co
                         <TableCell className="font-medium">
                           <div className="flex items-center gap-3">
                             <Avatar className="h-9 w-9">
-                              <AvatarImage src={`https://placehold.co/40x40.png`} alt={collaborator.name} data-ai-hint="person face" />
+                              <AvatarImage src={collaborator.avatarUrl} alt={collaborator.name} data-ai-hint="person face" />
                               <AvatarFallback>{collaborator.name.charAt(0)}</AvatarFallback>
                             </Avatar>
                             {collaborator.name}

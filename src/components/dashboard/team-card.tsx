@@ -39,7 +39,7 @@ export function TeamCard({ collaborators }: TeamCardProps) {
         {collaborators.map((collaborator) => (
           <div key={collaborator.id} className="flex items-center gap-4">
             <Avatar className="hidden h-9 w-9 sm:flex">
-              <AvatarImage src={`https://placehold.co/40x40.png`} alt={collaborator.name} data-ai-hint="person face" />
+              <AvatarImage src={collaborator.avatarUrl} alt={collaborator.name} data-ai-hint="person face" />
               <AvatarFallback>{collaborator.name.charAt(0)}</AvatarFallback>
             </Avatar>
             <div className="grid gap-1">
