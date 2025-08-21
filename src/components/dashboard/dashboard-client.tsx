@@ -1,23 +1,25 @@
+
 "use client";
 
 import { useState, useMemo, useEffect } from 'react';
-import { DollarSign, TrendingUp, TrendingDown, Edit } from 'lucide-react';
+import { DollarSign, TrendingUp, TrendingDown, Edit, CalendarIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Calendar } from '@/components/ui/calendar';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
 import { AddTransactionDialog } from '@/components/dashboard/add-transaction-dialog';
 import { EditTransactionDialog } from '@/components/dashboard/edit-transaction-dialog';
 import type { Transaction, Category, Appointment } from '@/lib/types';
 import { DateRange } from 'react-day-picker';
-import { addDays, format } from 'date-fns';
+import { addDays, format, startOfDay, endOfDay } from 'date-fns';
 import { DailyRevenueCard } from './daily-revenue-card';
+import { cn } from '@/lib/utils';
 
 interface DashboardClientProps {
   initialTransactions: Transaction[];
   initialCategories: Category[];
-  initialAppointments: Appointment[];
 }
 
 const StatCard = ({ title, value, icon: Icon, trend, trendColor }: { title: string, value: string, icon: React.ElementType, trend?: string, trendColor?: string }) => (
@@ -33,13 +35,14 @@ const StatCard = ({ title, value, icon: Icon, trend, trendColor }: { title: stri
   </Card>
 );
 
-export function DashboardClient({ initialTransactions, initialCategories, initialAppointments }: DashboardClientProps) {
+export function DashboardClient({ initialTransactions, initialCategories }: DashboardClientProps) {
   const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions.map(t => ({...t, date: new Date(t.date)})));
   const [categories, setCategories] = useState<Category[]>(initialCategories);
-  const [appointments, setAppointments] = useState<Appointment[]>(initialAppointments.map(a => ({...a, date: new Date(a.date)})));
+  
+  const today = new Date();
   const [date, setDate] = useState<DateRange | undefined>({
-    from: new Date(),
-    to: addDays(new Date(), 7),
+    from: startOfDay(addDays(today, -30)),
+    to: endOfDay(today),
   });
 
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -50,12 +53,22 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
   useEffect(() => {
     setIsClient(true)
   }, [])
+  
+  const filteredTransactions = useMemo(() => {
+    if (!date?.from || !date?.to) {
+      return transactions;
+    }
+    const from = startOfDay(date.from);
+    const to = endOfDay(date.to);
+    return transactions.filter(t => t.date >= from && t.date <= to);
+  }, [transactions, date]);
+
 
   const { totalRevenue, totalExpenses, profit } = useMemo(() => {
-    const revenue = transactions
+    const revenue = filteredTransactions
       .filter((t) => t.type === 'revenue')
       .reduce((sum, t) => sum + t.amount, 0);
-    const expenses = transactions
+    const expenses = filteredTransactions
       .filter((t) => t.type === 'expense')
       .reduce((sum, t) => sum + t.amount, 0);
     return {
@@ -63,7 +76,7 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
       totalExpenses: expenses,
       profit: revenue - expenses,
     };
-  }, [transactions]);
+  }, [filteredTransactions]);
   
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -133,7 +146,7 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {transactions.slice(0, 5).map(t => {
+                  {filteredTransactions.slice(0, 5).map(t => {
                     const category = getCategory(t.categoryId);
                     return (
                       <TableRow key={t.id}>
@@ -171,28 +184,51 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
           </Card>
           
           <div className="lg:col-span-3 space-y-6">
-            <DailyRevenueCard totalRevenue={totalRevenue} transactions={transactions} />
+            <DailyRevenueCard totalRevenue={totalRevenue} transactions={filteredTransactions} />
             <Card>
               <CardHeader>
-                <CardTitle>Agendamentos</CardTitle>
-                <CardDescription>Sua agenda para os próximos dias.</CardDescription>
+                <CardTitle>Filtrar por Data</CardTitle>
+                <CardDescription>Selecione um período para visualizar as transações.</CardDescription>
               </CardHeader>
-              <CardContent className="flex justify-center">
-                <Calendar
-                  mode="range"
-                  selected={date}
-                  onSelect={setDate}
-                  className="rounded-md"
-                  modifiers={{
-                    events: appointments.map(a => a.date)
-                  }}
-                  modifiersStyles={{
-                    events: {
-                      color: 'hsl(var(--primary-foreground))',
-                      backgroundColor: 'hsl(var(--primary))',
-                    }
-                  }}
-                />
+              <CardContent className="space-y-4">
+                <div className="grid gap-2">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        id="date"
+                        variant={"outline"}
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !date && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {date?.from ? (
+                          date.to ? (
+                            <>
+                              {format(date.from, "dd/MM/y")} -{" "}
+                              {format(date.to, "dd/MM/y")}
+                            </>
+                          ) : (
+                            format(date.from, "dd/MM/y")
+                          )
+                        ) : (
+                          <span>Selecione uma data</span>
+                        )}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="end">
+                      <Calendar
+                        initialFocus
+                        mode="range"
+                        defaultMonth={date?.from}
+                        selected={date}
+                        onSelect={setDate}
+                        numberOfMonths={2}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
               </CardContent>
             </Card>
           </div>
