@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart2, Briefcase, Settings } from "lucide-react";
+import { BarChart2, Briefcase, Settings, ShoppingCart } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -41,10 +41,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         <SidebarHeader className="p-4">
           <Link href="/" className="flex items-center gap-2">
             <div className="p-1.5 rounded-lg bg-primary">
-              <Briefcase className="w-6 h-6 text-primary-foreground" />
+              <ShoppingCart className="w-6 h-6 text-primary-foreground" />
             </div>
             <span className="text-xl font-semibold group-data-[collapsible=icon]:hidden">
-              BizSight
+              Atacadão SA
             </span>
           </Link>
         </SidebarHeader>
