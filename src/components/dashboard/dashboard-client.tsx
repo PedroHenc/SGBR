@@ -11,7 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Badge } from '@/components/ui/badge';
 import { AddTransactionDialog } from '@/components/dashboard/add-transaction-dialog';
 import { EditTransactionDialog } from '@/components/dashboard/edit-transaction-dialog';
-import type { Transaction, Category, Appointment } from '@/lib/types';
+import type { Transaction, Category } from '@/lib/types';
 import { DateRange } from 'react-day-picker';
 import { addDays, format, startOfDay, endOfDay } from 'date-fns';
 import { DailyRevenueCard } from './daily-revenue-card';
@@ -55,11 +55,11 @@ export function DashboardClient({ initialTransactions, initialCategories }: Dash
   }, [])
   
   const filteredTransactions = useMemo(() => {
-    if (!date?.from || !date?.to) {
+    if (!date?.from) {
       return transactions;
     }
     const from = startOfDay(date.from);
-    const to = endOfDay(date.to);
+    const to = date.to ? endOfDay(date.to) : endOfDay(date.from);
     return transactions.filter(t => t.date >= from && t.date <= to);
   }, [transactions, date]);
 
