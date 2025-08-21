@@ -66,7 +66,7 @@ export function TransactionsClient({ initialTransactions, initialCategories }: T
         `"${t.description.replace(/"/g, '""')}"`,
         t.type === 'revenue' ? 'Receita' : 'Despesa',
         t.amount,
-        format(t.date, 'yyyy-MM-dd'),
+        format(t.date, 'yyyy-MM-dd HH:mm'),
         `"${category?.name.replace(/"/g, '""') || 'Sem categoria'}"`
       ].join(',');
     }).join('\n');
@@ -140,7 +140,7 @@ export function TransactionsClient({ initialTransactions, initialCategories }: T
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        {isClient && <span>{format(t.date, 'dd/MM/yyyy')}</span>}
+                        {isClient && <span>{format(t.date, 'dd/MM/yyyy HH:mm')}</span>}
                       </TableCell>
                       <TableCell className={`text-right font-medium ${t.type === 'revenue' ? 'text-green-500' : 'text-red-500'}`}>
                         {t.type === 'revenue' ? '+' : '-'}

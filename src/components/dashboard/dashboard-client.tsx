@@ -139,7 +139,7 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
                       <TableRow key={t.id}>
                         <TableCell>
                           <div className="font-medium">{t.description}</div>
-                          {isClient && <div className="text-sm text-muted-foreground">{format(t.date, 'dd/MM/yyyy')}</div>}
+                          {isClient && <div className="text-sm text-muted-foreground">{format(t.date, 'dd/MM/yyyy HH:mm')}</div>}
                         </TableCell>
                         <TableCell>
                           <Badge 
