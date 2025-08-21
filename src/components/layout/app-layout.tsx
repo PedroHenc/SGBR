@@ -37,10 +37,6 @@ const navItems = [
   { href: "/skills", label: "Competências", icon: Star },
 ];
 
-const externalNavItems = [
-    { href: "https://google.com", label: "Trabalhar", icon: ExternalLink },
-]
-
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
@@ -68,19 +64,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                     <item.icon />
                     <span>{item.label}</span>
                   </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-             {externalNavItems.map((item) => (
-              <SidebarMenuItem key={item.href}>
-                <SidebarMenuButton
-                  asChild
-                  tooltip={{ children: item.label }}
-                >
-                  <a href={item.href} target="_blank" rel="noopener noreferrer">
-                    <item.icon />
-                    <span>{item.label}</span>
-                  </a>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
@@ -121,9 +104,16 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
-        <header className="sticky top-0 z-10 flex h-14 items-center justify-between gap-4 border-b bg-background/80 backdrop-blur-sm px-4 sm:justify-end sm:px-6">
+        <header className="sticky top-0 z-10 flex h-14 items-center justify-between gap-4 border-b bg-background/80 backdrop-blur-sm px-4 sm:px-6">
           <SidebarTrigger className="sm:hidden" />
-          {/* Header content can go here if needed */}
+          <div className="flex flex-1 items-center justify-end">
+            <Button asChild size="default">
+              <a href="https://google.com" target="_blank" rel="noopener noreferrer">
+                <ExternalLink className="mr-2 h-4 w-4" />
+                Trabalhar
+              </a>
+            </Button>
+          </div>
         </header>
         <main className="flex-1 p-4 sm:p-6">{children}</main>
       </SidebarInset>
