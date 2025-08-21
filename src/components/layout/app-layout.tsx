@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart2, Briefcase, Settings } from "lucide-react";
+import { BarChart2, Briefcase, List, Settings } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,6 +30,7 @@ import { Logo } from "./logo";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: BarChart2 },
+  { href: "/transactions", label: "Transações", icon: List },
   { href: "/categories", label: "Categorias", icon: Briefcase },
 ];
 
