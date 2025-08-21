@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Plus, Loader2, User, Edit } from 'lucide-react';
+import { Plus, Loader2, User, Edit, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -15,6 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import type { Collaborator } from '@/lib/types';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { EditCollaboratorDialog } from './edit-collaborator-dialog';
+import { DeleteCollaboratorDialog } from './delete-collaborator-dialog';
 
 interface CollaboratorsClientProps {
   initialCollaborators: Collaborator[];
@@ -33,6 +34,7 @@ const formSchema = z.object({
 export function CollaboratorsClient({ initialCollaborators, availableRoles }: CollaboratorsClientProps) {
   const [collaborators, setCollaborators] = useState<Collaborator[]>(initialCollaborators);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedCollaborator, setSelectedCollaborator] = useState<Collaborator | null>(null);
   const { toast } = useToast();
 
@@ -64,10 +66,25 @@ export function CollaboratorsClient({ initialCollaborators, availableRoles }: Co
     );
   };
 
+  const handleDeleteCollaborator = (collaboratorId: string) => {
+    const collaboratorName = collaborators.find(c => c.id === collaboratorId)?.name;
+    setCollaborators(prev => prev.filter(c => c.id !== collaboratorId));
+    toast({
+      title: "Colaborador Excluído",
+      description: `"${collaboratorName}" foi excluído com sucesso.`,
+    });
+  };
+
   const openEditDialog = (collaborator: Collaborator) => {
     setSelectedCollaborator(collaborator);
     setIsEditDialogOpen(true);
   };
+
+  const openDeleteDialog = (collaborator: Collaborator) => {
+    setSelectedCollaborator(collaborator);
+    setIsDeleteDialogOpen(true);
+  };
+
 
   return (
     <>
@@ -168,6 +185,10 @@ export function CollaboratorsClient({ initialCollaborators, availableRoles }: Co
                             <Edit className="h-4 w-4" />
                             <span className="sr-only">Editar</span>
                           </Button>
+                           <Button variant="ghost" size="icon" onClick={() => openDeleteDialog(collaborator)}>
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                            <span className="sr-only">Excluir</span>
+                          </Button>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -184,6 +205,12 @@ export function CollaboratorsClient({ initialCollaborators, availableRoles }: Co
         open={isEditDialogOpen}
         onOpenChange={setIsEditDialogOpen}
         availableRoles={availableRoles}
+      />
+      <DeleteCollaboratorDialog
+        collaborator={selectedCollaborator}
+        onDeleteCollaborator={handleDeleteCollaborator}
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
       />
     </>
   );
