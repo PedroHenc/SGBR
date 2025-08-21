@@ -1,11 +1,11 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Plus, Loader2, Edit, Trash2 } from 'lucide-react';
+import { Plus, Loader2, Edit, Trash2, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -36,13 +36,24 @@ export function CategoriesClient({ initialCategories }: CategoriesClientProps) {
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const { toast } = useToast();
 
+  const generateRandomColor = () => {
+    return `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')}`;
+  };
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      color: "#000000",
+      color: generateRandomColor(),
     },
   });
+
+  useEffect(() => {
+    // Set an initial random color when the component mounts and the form is reset
+    if (!form.getValues('color')) {
+        form.setValue('color', generateRandomColor());
+    }
+  }, [form]);
   
   function onSubmit(values: z.infer<typeof formSchema>) {
     const newCategory: Category = {
@@ -56,6 +67,7 @@ export function CategoriesClient({ initialCategories }: CategoriesClientProps) {
       description: `Categoria "${values.name}" adicionada com sucesso.`,
     });
     form.reset();
+    form.setValue('color', generateRandomColor());
   }
 
   const handleEditCategory = (updatedCategory: Category) => {
@@ -118,7 +130,18 @@ export function CategoriesClient({ initialCategories }: CategoriesClientProps) {
                       name="color"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Cor da Categoria</FormLabel>
+                            <div className="flex items-center justify-between">
+                                <FormLabel>Cor da Categoria</FormLabel>
+                                <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => form.setValue('color', generateRandomColor(), { shouldValidate: true })}
+                                >
+                                <RefreshCw className="mr-2 h-3 w-3" />
+                                Gerar Cor
+                                </Button>
+                            </div>
                           <FormControl>
                             <div className="flex items-center gap-2">
                               <Input type="color" className="w-12 h-10 p-1" {...field} />
