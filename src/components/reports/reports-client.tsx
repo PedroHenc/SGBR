@@ -19,7 +19,7 @@ interface ReportsClientProps {
   initialCollaborators: Collaborator[];
 }
 
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE = 5;
 
 export function ReportsClient({ initialTransactions, initialCategories, initialCollaborators }: ReportsClientProps) {
   const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions.map(t => ({...t, date: new Date(t.date)})));
