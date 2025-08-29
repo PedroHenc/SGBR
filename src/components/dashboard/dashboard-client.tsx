@@ -51,7 +51,7 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
     setIsClient(true)
   }, [])
   
-  const { monthlyReportsData } = useMemo(() => {
+  const { monthlyReportsData, totalExpenses } = useMemo(() => {
     const monthlyCounts = Array(12).fill(0).map((_, i) => ({ month: format(new Date(0, i), 'MMM'), count: 0 }));
     
     const filteredTransactions = selectedCategories.length > 0
@@ -63,8 +63,13 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
       monthlyCounts[month].count++;
     });
 
+    const totalExpenses = transactions
+      .filter(t => t.type === 'expense')
+      .reduce((sum, t) => sum + t.amount, 0);
+
     return {
       monthlyReportsData: monthlyCounts,
+      totalExpenses
     };
   }, [transactions, selectedCategories]);
   
@@ -141,6 +146,10 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
     setSelectedCategories(categoryIds);
   };
 
+  const vaultBaseValue = 7345.67;
+  const currentVaultValue = vaultBaseValue - totalExpenses;
+
+
   return (
     <>
       <div className="flex flex-col gap-6">
@@ -156,8 +165,8 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
-          <StatCard title="Cofre" value={formatCurrency(7345.67)} icon={PiggyBank} trend="+20.1% do último mês" trendColor="text-green-500"/>
-          <StatCard title="Despesas Totais" value={formatCurrency(1234.56)} icon={TrendingDown} trend="+12.5% do último mês" trendColor="text-red-500"/>
+          <StatCard title="Cofre" value={formatCurrency(currentVaultValue)} icon={PiggyBank} trend="+20.1% do último mês" trendColor="text-green-500"/>
+          <StatCard title="Despesas Totais" value={formatCurrency(totalExpenses)} icon={TrendingDown} trend="+12.5% do último mês" trendColor="text-red-500"/>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
