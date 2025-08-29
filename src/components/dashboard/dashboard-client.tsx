@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from 'react';
-import { DollarSign, TrendingUp, TrendingDown, Edit, FileDown } from 'lucide-react';
+import { DollarSign, TrendingUp, TrendingDown, Edit, FileDown, PiggyBank } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -49,7 +49,7 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
     setIsClient(true)
   }, [])
   
-  const { totalRevenue, totalExpenses, profit } = useMemo(() => {
+  const { totalRevenue, totalExpenses } = useMemo(() => {
     const revenue = transactions
       .filter((t) => t.type === 'revenue')
       .reduce((sum, t) => sum + t.amount, 0);
@@ -59,7 +59,6 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
     return {
       totalRevenue: revenue,
       totalExpenses: expenses,
-      profit: revenue - expenses,
     };
   }, [transactions]);
   
@@ -140,10 +139,9 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
           </div>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          <StatCard title="Receita Total" value={formatCurrency(totalRevenue)} icon={TrendingUp} trend="+20.1% do último mês" trendColor="text-green-500"/>
+        <div className="grid gap-4 md:grid-cols-2">
+          <StatCard title="Cofre" value={formatCurrency(totalRevenue)} icon={PiggyBank} trend="+20.1% do último mês" trendColor="text-green-500"/>
           <StatCard title="Despesas Totais" value={formatCurrency(totalExpenses)} icon={TrendingDown} trend="+12.5% do último mês" trendColor="text-red-500"/>
-          <StatCard title="Lucro Líquido" value={formatCurrency(profit)} icon={DollarSign} trend="+19.2% do último mês" trendColor="text-green-500" />
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
