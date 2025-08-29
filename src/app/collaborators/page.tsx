@@ -1,12 +1,12 @@
 import { AppLayout } from "@/components/layout/app-layout";
 import { CollaboratorsClient } from "@/components/collaborators/collaborators-client";
-import type { Collaborator, Skill } from "@/lib/types";
+import type { Collaborator } from "@/lib/types";
 
 // In a real app, this data would come from a database
 const mockCollaborators: Collaborator[] = [
-    { id: '1', name: 'Ana Silva', role: 'Gerente', skills: ['1', '3'], avatarUrl: 'https://i.pravatar.cc/150?u=a042581f4e29026024d' },
-    { id: '2', name: 'Carlos Oliveira', role: 'Diretor(a) Financeiro(a)', skills: ['2'], avatarUrl: 'https://i.pravatar.cc/150?u=a042581f4e29026704d' },
-    { id: '3', name: 'Beatriz Costa', role: 'Trainee', skills: ['4'], avatarUrl: 'https://i.pravatar.cc/150?u=a04258114e29026702d' },
+    { id: '1', name: 'Ana Silva', role: 'Gerente', avatarUrl: 'https://i.pravatar.cc/150?u=a042581f4e29026024d' },
+    { id: '2', name: 'Carlos Oliveira', role: 'Diretor(a) Financeiro(a)', avatarUrl: 'https://i.pravatar.cc/150?u=a042581f4e29026704d' },
+    { id: '3', name: 'Beatriz Costa', role: 'Trainee', avatarUrl: 'https://i.pravatar.cc/150?u=a04258114e29026702d' },
     { id: '4', name: 'Daniel Martins', role: 'Painter', avatarUrl: 'https://i.pravatar.cc/150?u=a042581f4e29026708c' },
 ];
 
@@ -20,25 +20,14 @@ export const availableRoles = [
   'Aposentado'
 ];
 
-const mockSkills: Skill[] = [
-  { id: '1', name: 'React' },
-  { id: '2', name: 'Contabilidade' },
-  { id: '3', name: 'Gestão de Projetos' },
-  { id: '4', name: 'Comunicação' },
-  { id: '5', name: 'Design Gráfico' },
-];
-
-
 export default function CollaboratorsPage() {
   const collaborators = mockCollaborators;
-  const skills = mockSkills;
 
   return (
     <AppLayout>
       <CollaboratorsClient 
         initialCollaborators={collaborators}
         availableRoles={availableRoles}
-        availableSkills={skills}
       />
     </AppLayout>
   );

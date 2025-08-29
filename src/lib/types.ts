@@ -22,15 +22,9 @@ export interface Appointment {
   date: Date;
 }
 
-export interface Skill {
-  id: string;
-  name: string;
-}
-
 export interface Collaborator {
   id: string;
   name: string;
   role: string;
   avatarUrl?: string;
-  skills?: string[]; // Array of skill IDs
 }

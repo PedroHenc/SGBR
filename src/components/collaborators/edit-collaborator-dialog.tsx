@@ -5,7 +5,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Loader2, UploadCloud, X, Check } from 'lucide-react';
+import { Loader2, UploadCloud, X } from 'lucide-react';
 import { Button, buttonVariants } from '@/components/ui/button';
 import {
   Dialog,
@@ -26,14 +26,10 @@ import {
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from "@/hooks/use-toast";
-import type { Collaborator, Skill } from '@/lib/types';
+import type { Collaborator } from '@/lib/types';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Label } from '../ui/label';
 import { cn } from '@/lib/utils';
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '../ui/command';
-import { Badge } from '../ui/badge';
-import { ScrollArea } from '../ui/scroll-area';
 
 interface EditCollaboratorDialogProps {
   collaborator: Collaborator | null;
@@ -41,7 +37,6 @@ interface EditCollaboratorDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   availableRoles: string[];
-  availableSkills: Skill[];
 }
 
 const formSchema = z.object({
@@ -52,10 +47,9 @@ const formSchema = z.object({
     message: "Por favor, selecione um cargo.",
   }),
   avatarUrl: z.string().optional(),
-  skills: z.array(z.string()).optional(),
 });
 
-export function EditCollaboratorDialog({ collaborator, onEditCollaborator, open, onOpenChange, availableRoles, availableSkills }: EditCollaboratorDialogProps) {
+export function EditCollaboratorDialog({ collaborator, onEditCollaborator, open, onOpenChange, availableRoles }: EditCollaboratorDialogProps) {
   const { toast } = useToast();
   const [preview, setPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -70,7 +64,6 @@ export function EditCollaboratorDialog({ collaborator, onEditCollaborator, open,
         name: collaborator.name,
         role: collaborator.role,
         avatarUrl: collaborator.avatarUrl,
-        skills: collaborator.skills || [],
       });
       setPreview(collaborator.avatarUrl || null);
     }
@@ -108,10 +101,6 @@ export function EditCollaboratorDialog({ collaborator, onEditCollaborator, open,
         fileInputRef.current.value = "";
     }
   }
-
-  const getSkillName = (skillId: string) => {
-    return availableSkills.find(s => s.id === skillId)?.name || 'Desconhecida';
-  };
 
   const title = 'Editar Colaborador';
   const description = 'Atualize os detalhes do colaborador.';
@@ -184,71 +173,6 @@ export function EditCollaboratorDialog({ collaborator, onEditCollaborator, open,
                           ))}
                         </SelectContent>
                       </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="skills"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Competências</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant="outline"
-                            role="combobox"
-                            className={cn(
-                              "w-full justify-between h-auto",
-                              !field.value?.length && "text-muted-foreground"
-                            )}
-                          >
-                            <div className="flex gap-1 flex-wrap">
-                              {field.value?.length > 0 ? (
-                                field.value.map(skillId => (
-                                  <Badge key={skillId} variant="secondary">{getSkillName(skillId)}</Badge>
-                                ))
-                              ) : (
-                                "Selecione as competências"
-                              )}
-                            </div>
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
-                         <Command>
-                          <CommandInput placeholder="Buscar competência..." />
-                          <CommandEmpty>Nenhuma competência encontrada.</CommandEmpty>
-                          <CommandGroup>
-                            <ScrollArea className="h-48">
-                              {availableSkills.map((skill) => (
-                                <CommandItem
-                                  value={skill.name}
-                                  key={skill.id}
-                                  onSelect={() => {
-                                    const currentSkills = field.value || [];
-                                    const newSkills = currentSkills.includes(skill.id)
-                                      ? currentSkills.filter(s => s !== skill.id)
-                                      : [...currentSkills, skill.id];
-                                    field.onChange(newSkills);
-                                  }}
-                                >
-                                  <Check
-                                    className={cn(
-                                      "mr-2 h-4 w-4",
-                                      field.value?.includes(skill.id) ? "opacity-100" : "opacity-0"
-                                    )}
-                                  />
-                                  {skill.name}
-                                </CommandItem>
-                              ))}
-                            </ScrollArea>
-                          </CommandGroup>
-                         </Command>
-                      </PopoverContent>
-                    </Popover>
                     <FormMessage />
                   </FormItem>
                 )}

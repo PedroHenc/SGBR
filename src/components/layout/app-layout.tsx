@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart2, Briefcase, List, Settings, Users, Star, ExternalLink } from "lucide-react";
+import { BarChart2, Briefcase, List, Settings, Users, ExternalLink } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -35,7 +35,6 @@ const navItems = [
   { href: "/reports", label: "Relatórios", icon: List },
   { href: "/categories", label: "Categorias", icon: Briefcase },
   { href: "/collaborators", label: "Colaboradores", icon: Users },
-  { href: "/skills", label: "Competências", icon: Star },
 ];
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
