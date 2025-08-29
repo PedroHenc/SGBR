@@ -16,6 +16,9 @@ import { MonthlyReportsChart } from './monthly-reports-chart';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { EditVaultDialog } from './edit-vault-dialog';
+import { ResetExpensesDialog } from './reset-expenses-dialog';
+import { useToast } from '@/hooks/use-toast';
+
 
 interface DashboardClientProps {
   initialTransactions: Transaction[];
@@ -42,18 +45,27 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
   
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isVaultDialogOpen, setIsVaultDialogOpen] = useState(false);
+  const [isResetExpensesDialogOpen, setIsResetExpensesDialogOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [animatedRowId, setAnimatedRowId] = useState<string | null>(null);
   const [vaultBaseValue, setVaultBaseValue] = useState(7345.67);
 
   const [isClient, setIsClient] = useState(false)
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const { toast } = useToast();
 
   useEffect(() => {
     setIsClient(true)
   }, [])
   
-  const { monthlyReportsData, totalExpenses } = useMemo(() => {
+  const { totalExpenses } = useMemo(() => {
+    const totalExpenses = transactions
+      .filter(t => t.type === 'expense')
+      .reduce((sum, t) => sum + t.amount, 0);
+    return { totalExpenses };
+  }, [transactions]);
+  
+  const monthlyReportsData = useMemo(() => {
     const monthlyCounts = Array(12).fill(0).map((_, i) => ({ month: format(new Date(0, i), 'MMM'), count: 0 }));
     
     const filteredTransactions = selectedCategories.length > 0
@@ -65,14 +77,7 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
       monthlyCounts[month].count++;
     });
 
-    const totalExpenses = transactions
-      .filter(t => t.type === 'expense')
-      .reduce((sum, t) => sum + t.amount, 0);
-
-    return {
-      monthlyReportsData: monthlyCounts,
-      totalExpenses
-    };
+    return monthlyCounts;
   }, [transactions, selectedCategories]);
   
   const formatCurrency = (amount: number) => {
@@ -154,6 +159,14 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
     setVaultBaseValue(newAmount);
   };
 
+  const handleResetExpenses = () => {
+    setTransactions(prev => prev.filter(t => t.type !== 'expense'));
+    toast({
+      title: 'Despesas Resetadas',
+      description: 'Todas as transações de despesas foram removidas.',
+    });
+  }
+
   return (
     <>
       <div className="flex flex-col gap-6">
@@ -170,7 +183,7 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
 
         <div className="grid gap-4 md:grid-cols-2">
           <StatCard title="Cofre" value={formatCurrency(currentVaultValue)} icon={PiggyBank} onClick={() => setIsVaultDialogOpen(true)} />
-          <StatCard title="Despesas Totais" value={formatCurrency(totalExpenses)} icon={TrendingDown} />
+          <StatCard title="Despesas Totais" value={formatCurrency(totalExpenses)} icon={TrendingDown} onClick={() => setIsResetExpensesDialogOpen(true)} />
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
@@ -266,6 +279,11 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
         onSave={handleVaultSave}
         open={isVaultDialogOpen}
         onOpenChange={setIsVaultDialogOpen}
+      />
+      <ResetExpensesDialog
+        onResetExpenses={handleResetExpenses}
+        open={isResetExpensesDialogOpen}
+        onOpenChange={setIsResetExpensesDialogOpen}
       />
     </>
   );
