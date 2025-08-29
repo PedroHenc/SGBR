@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from 'react';
-import { DollarSign, TrendingUp, TrendingDown, Edit } from 'lucide-react';
+import { DollarSign, TrendingUp, TrendingDown, Edit, FileDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -97,6 +97,35 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
     return categories.find(c => c.id === categoryId);
   };
 
+  const handleExportRecentCSV = () => {
+    const recentTransactions = transactions.slice(0, 5);
+    const csvHeader = ['Descrição', 'Tipo', 'Valor', 'Data', 'Categoria'].join(',');
+    const csvBody = recentTransactions.map(t => {
+      const category = getCategory(t.categoryId);
+      return [
+        `"${t.description.replace(/"/g, '""')}"`,
+        t.type === 'revenue' ? 'Receita' : 'Despesa',
+        t.amount,
+        format(t.date, 'yyyy-MM-dd HH:mm'),
+        `"${category?.name.replace(/"/g, '""') || 'Sem categoria'}"`
+      ].join(',');
+    }).join('\n');
+
+    const csvContent = `${csvHeader}\n${csvBody}`;
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", "relatorios_recentes.csv");
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
   return (
     <>
       <div className="flex flex-col gap-6">
@@ -119,9 +148,15 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
           <Card className="lg:col-span-4">
-            <CardHeader>
-              <CardTitle>Relatórios Recentes</CardTitle>
-              <CardDescription>Uma visão geral de suas últimas atividades financeiras.</CardDescription>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>Relatórios Recentes</CardTitle>
+                <CardDescription>Uma visão geral de suas últimas atividades financeiras.</CardDescription>
+              </div>
+              <Button onClick={handleExportRecentCSV} variant="outline" size="sm">
+                <FileDown className="mr-2 h-4 w-4" />
+                Exportar CSV
+              </Button>
             </CardHeader>
             <CardContent>
               <Table>
