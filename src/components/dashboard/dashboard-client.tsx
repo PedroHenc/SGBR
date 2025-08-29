@@ -44,6 +44,7 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
   const [animatedRowId, setAnimatedRowId] = useState<string | null>(null);
 
   const [isClient, setIsClient] = useState(false)
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
   useEffect(() => {
     setIsClient(true)
@@ -58,7 +59,12 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
       .reduce((sum, t) => sum + t.amount, 0);
 
     const monthlyCounts = Array(12).fill(0).map((_, i) => ({ month: format(new Date(0, i), 'MMM'), count: 0 }));
-    transactions.forEach(t => {
+    
+    const filteredTransactions = selectedCategories.length > 0
+        ? transactions.filter(t => selectedCategories.includes(t.categoryId))
+        : transactions;
+
+    filteredTransactions.forEach(t => {
       const month = t.date.getMonth();
       monthlyCounts[month].count++;
     });
@@ -68,7 +74,7 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
       totalExpenses: expenses,
       monthlyReportsData: monthlyCounts,
     };
-  }, [transactions]);
+  }, [transactions, selectedCategories]);
   
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -131,6 +137,10 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
       link.click();
       document.body.removeChild(link);
     }
+  };
+
+  const handleCategoryFilterChange = (categoryIds: string[]) => {
+    setSelectedCategories(categoryIds);
   };
 
   return (
@@ -214,7 +224,12 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
           
           <div className="lg:col-span-3 space-y-6">
             <TeamCard collaborators={collaborators} />
-            <MonthlyReportsChart data={monthlyReportsData} />
+            <MonthlyReportsChart 
+              data={monthlyReportsData}
+              allCategories={categories}
+              selectedCategories={selectedCategories}
+              onCategoryChange={handleCategoryFilterChange}
+            />
           </div>
         </div>
       </div>

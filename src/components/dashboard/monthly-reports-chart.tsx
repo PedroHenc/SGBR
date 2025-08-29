@@ -1,7 +1,9 @@
 
 "use client";
 
+import { useState } from "react";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts"
+import { Check, ChevronsUpDown } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -9,21 +11,94 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+import type { Category } from "@/lib/types";
 
 interface MonthlyReportsChartProps {
   data: { month: string; count: number }[];
+  allCategories: Category[];
+  selectedCategories: string[];
+  onCategoryChange: (categoryIds: string[]) => void;
 }
 
-export function MonthlyReportsChart({ data }: MonthlyReportsChartProps) {
+export function MonthlyReportsChart({ data, allCategories, selectedCategories, onCategoryChange }: MonthlyReportsChartProps) {
+  const [open, setOpen] = useState(false);
   const totalReports = data.reduce((sum, item) => sum + item.count, 0);
+
+  const handleSelect = (categoryId: string) => {
+    const newSelection = selectedCategories.includes(categoryId)
+      ? selectedCategories.filter(id => id !== categoryId)
+      : [...selectedCategories, categoryId];
+    onCategoryChange(newSelection);
+  }
+
+  const getCategoryName = (categoryId: string) => {
+    return allCategories.find(c => c.id === categoryId)?.name || "";
+  }
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Análise Mensal de Relatórios</CardTitle>
-        <CardDescription>
-          Você criou um total de {totalReports} relatórios este ano.
-        </CardDescription>
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+            <div>
+                <CardTitle>Análise Mensal de Relatórios</CardTitle>
+                <CardDescription>
+                    {`Você criou ${totalReports} relatórios`}
+                    {selectedCategories.length > 0 ? " com os filtros selecionados" : " no total este ano"}.
+                </CardDescription>
+            </div>
+            <Popover open={open} onOpenChange={setOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={open}
+                  className="w-full sm:w-[200px] justify-between"
+                >
+                  <span className="truncate">
+                    {selectedCategories.length > 0 ? `${selectedCategories.length} selecionada(s)` : "Filtrar por categoria..."}
+                  </span>
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[200px] p-0">
+                <Command>
+                  <CommandInput placeholder="Buscar categoria..." />
+                  <CommandList>
+                    <CommandEmpty>Nenhuma categoria encontrada.</CommandEmpty>
+                    <CommandGroup>
+                      {allCategories.map((category) => (
+                        <CommandItem
+                          key={category.id}
+                          value={category.name}
+                          onSelect={() => handleSelect(category.id)}
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              selectedCategories.includes(category.id) ? "opacity-100" : "opacity-0"
+                            )}
+                          />
+                          {category.name}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+        </div>
+        {selectedCategories.length > 0 && (
+            <div className="flex flex-wrap gap-1 pt-2">
+                {selectedCategories.map(id => (
+                    <Badge variant="secondary" key={id}>{getCategoryName(id)}</Badge>
+                ))}
+            </div>
+        )}
       </CardHeader>
       <CardContent className="pb-4">
         <div className="h-[200px]">
