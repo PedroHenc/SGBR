@@ -1,6 +1,8 @@
 import { AppLayout } from "@/components/layout/app-layout";
 import { CollaboratorsClient } from "@/components/collaborators/collaborators-client";
 import type { Collaborator } from "@/lib/types";
+import { useQuery } from "@tanstack/react-query";
+import { getBenneiro } from "@/services/sgbr-api";
 
 // In a real app, this data would come from a database
 const mockCollaborators: Collaborator[] = [
@@ -22,6 +24,15 @@ export const availableRoles = [
 
 export default function CollaboratorsPage() {
   const collaborators = mockCollaborators;
+
+  const benneiroData = useQuery({
+    queryKey: ["benneiros"],
+    queryFn: getBenneiro,
+    refetchOnWindowFocus:true,
+    refetchOnMount:true,
+  }) || [];
+
+  console.log("get benneiro(s)", benneiroData.data?.data)
 
   return (
     <AppLayout>
