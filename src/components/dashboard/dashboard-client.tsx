@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from 'react';
-import { DollarSign, TrendingUp, TrendingDown, Edit, FileDown, PiggyBank } from 'lucide-react';
+import { TrendingDown, Edit, FileDown, PiggyBank } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -12,7 +12,7 @@ import { EditTransactionDialog } from '@/components/dashboard/edit-transaction-d
 import type { Transaction, Category, Collaborator } from '@/lib/types';
 import { format } from 'date-fns';
 import { TeamCard } from './team-card';
-import { DailyRevenueCard } from './daily-revenue-card';
+import { MonthlyReportsChart } from './monthly-reports-chart';
 import { cn } from '@/lib/utils';
 
 interface DashboardClientProps {
@@ -49,16 +49,24 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
     setIsClient(true)
   }, [])
   
-  const { totalRevenue, totalExpenses } = useMemo(() => {
+  const { totalRevenue, totalExpenses, monthlyReportsData } = useMemo(() => {
     const revenue = transactions
       .filter((t) => t.type === 'revenue')
       .reduce((sum, t) => sum + t.amount, 0);
     const expenses = transactions
       .filter((t) => t.type === 'expense')
       .reduce((sum, t) => sum + t.amount, 0);
+
+    const monthlyCounts = Array(12).fill(0).map((_, i) => ({ month: format(new Date(0, i), 'MMM'), count: 0 }));
+    transactions.forEach(t => {
+      const month = t.date.getMonth();
+      monthlyCounts[month].count++;
+    });
+
     return {
       totalRevenue: revenue,
       totalExpenses: expenses,
+      monthlyReportsData: monthlyCounts,
     };
   }, [transactions]);
   
@@ -206,7 +214,7 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
           
           <div className="lg:col-span-3 space-y-6">
             <TeamCard collaborators={collaborators} />
-            <DailyRevenueCard totalRevenue={totalRevenue} />
+            <MonthlyReportsChart data={monthlyReportsData} />
           </div>
         </div>
       </div>
