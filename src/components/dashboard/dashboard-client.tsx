@@ -51,14 +51,7 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
     setIsClient(true)
   }, [])
   
-  const { totalRevenue, totalExpenses, monthlyReportsData } = useMemo(() => {
-    const revenue = transactions
-      .filter((t) => t.type === 'revenue')
-      .reduce((sum, t) => sum + t.amount, 0);
-    const expenses = transactions
-      .filter((t) => t.type === 'expense')
-      .reduce((sum, t) => sum + t.amount, 0);
-
+  const { monthlyReportsData } = useMemo(() => {
     const monthlyCounts = Array(12).fill(0).map((_, i) => ({ month: format(new Date(0, i), 'MMM'), count: 0 }));
     
     const filteredTransactions = selectedCategories.length > 0
@@ -71,8 +64,6 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
     });
 
     return {
-      totalRevenue: revenue,
-      totalExpenses: expenses,
       monthlyReportsData: monthlyCounts,
     };
   }, [transactions, selectedCategories]);
@@ -165,8 +156,8 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
-          <StatCard title="Cofre" value={formatCurrency(totalRevenue)} icon={PiggyBank} trend="+20.1% do último mês" trendColor="text-green-500"/>
-          <StatCard title="Despesas Totais" value={formatCurrency(totalExpenses)} icon={TrendingDown} trend="+12.5% do último mês" trendColor="text-red-500"/>
+          <StatCard title="Cofre" value={formatCurrency(7345.67)} icon={PiggyBank} trend="+20.1% do último mês" trendColor="text-green-500"/>
+          <StatCard title="Despesas Totais" value={formatCurrency(1234.56)} icon={TrendingDown} trend="+12.5% do último mês" trendColor="text-red-500"/>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
