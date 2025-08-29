@@ -81,7 +81,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 </Avatar>
                 <div className="text-left group-data-[collapsible=icon]:hidden">
                   <p className="font-medium text-sm">Usuário Admin</p>
-                  <p className="text-xs text-muted-foreground">admin@bizsight.com</p>
+                  <p className="text-xs text-muted-foreground">bennysrh@lifeinvader.com</p>
                 </div>
               </Button>
             </DropdownMenuTrigger>
@@ -90,17 +90,17 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 <div className="flex flex-col space-y-1">
                   <p className="text-sm font-medium leading-none">Usuário Admin</p>
                   <p className="text-xs leading-none text-muted-foreground">
-                    admin@bizsight.com
+                    bennysrh@lifeinvader.com
                   </p>
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <ThemeSwitcher />
-              <DropdownMenuItem>
+              {/* <DropdownMenuItem>
                 <Settings className="mr-2 h-4 w-4" />
                 <span>Configurações</span>
               </DropdownMenuItem>
-              <DropdownMenuItem>Sair</DropdownMenuItem>
+              <DropdownMenuItem>Sair</DropdownMenuItem> */}
             </DropdownMenuContent>
           </DropdownMenu>
         </SidebarFooter>

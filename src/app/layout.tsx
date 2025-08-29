@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { ThemeProvider } from '@/components/layout/theme-provider';
 
 export const metadata: Metadata = {
-  title: 'Atacadão SA',
+title: "Benny's gestão",
   description: 'A basic ERP for small businesses',
 };
 
