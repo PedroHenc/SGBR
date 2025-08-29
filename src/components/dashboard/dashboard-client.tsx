@@ -239,7 +239,7 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
           </Card>
           
           <div className="lg:col-span-3 space-y-6">
-            <TeamCard collaborators={collaborators} />
+            <TeamCard collaborators={collaborators} transactions={transactions} />
             <MonthlyReportsChart 
               data={monthlyReportsData}
               allCategories={categories}
