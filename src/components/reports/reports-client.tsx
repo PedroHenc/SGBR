@@ -9,17 +9,20 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { AddTransactionDialog } from '@/components/dashboard/add-transaction-dialog';
 import { EditTransactionDialog } from '@/components/dashboard/edit-transaction-dialog';
-import type { Transaction, Category } from '@/lib/types';
+import type { Transaction, Category, Collaborator } from '@/lib/types';
 import { format } from 'date-fns';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 
 interface ReportsClientProps {
   initialTransactions: Transaction[];
   initialCategories: Category[];
+  initialCollaborators: Collaborator[];
 }
 
-export function ReportsClient({ initialTransactions, initialCategories }: ReportsClientProps) {
+export function ReportsClient({ initialTransactions, initialCategories, initialCollaborators }: ReportsClientProps) {
   const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions.map(t => ({...t, date: new Date(t.date)})));
   const [categories, setCategories] = useState<Category[]>(initialCategories);
+  const [collaborators, setCollaborators] = useState<Collaborator[]>(initialCollaborators);
 
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
@@ -59,16 +62,22 @@ export function ReportsClient({ initialTransactions, initialCategories }: Report
     return categories.find(c => c.id === categoryId);
   };
 
+  const getCollaborator = (collaboratorId: string) => {
+    return collaborators.find(c => c.id === collaboratorId);
+  };
+
   const handleExportCSV = () => {
-    const csvHeader = ['Descrição', 'Tipo', 'Valor', 'Data', 'Categoria'].join(',');
+    const csvHeader = ['Descrição', 'Tipo', 'Valor', 'Data', 'Categoria', 'Colaborador'].join(',');
     const csvBody = transactions.map(t => {
       const category = getCategory(t.categoryId);
+      const collaborator = getCollaborator(t.collaboratorId);
       return [
         `"${t.description.replace(/"/g, '""')}"`,
         t.type === 'revenue' ? 'Receita' : 'Despesa',
         t.amount,
         format(t.date, 'yyyy-MM-dd HH:mm'),
-        `"${category?.name.replace(/"/g, '""') || 'Sem categoria'}"`
+        `"${category?.name.replace(/"/g, '""') || 'Sem categoria'}"`,
+        `"${collaborator?.name.replace(/"/g, '""') || 'N/A'}"`
       ].join(',');
     }).join('\n');
 
@@ -100,8 +109,8 @@ export function ReportsClient({ initialTransactions, initialCategories }: Report
               <FileDown className="mr-2 h-4 w-4" />
               Exportar CSV
             </Button>
-            <AddTransactionDialog type="revenue" categories={categories} onAddTransaction={handleAddTransaction} />
-            <AddTransactionDialog type="expense" categories={categories} onAddTransaction={handleAddTransaction} />
+            <AddTransactionDialog type="revenue" categories={categories} collaborators={collaborators} onAddTransaction={handleAddTransaction} />
+            <AddTransactionDialog type="expense" categories={categories} collaborators={collaborators} onAddTransaction={handleAddTransaction} />
           </div>
         </div>
 
@@ -115,6 +124,7 @@ export function ReportsClient({ initialTransactions, initialCategories }: Report
               <TableHeader>
                 <TableRow>
                   <TableHead>Descrição</TableHead>
+                  <TableHead>Colaborador</TableHead>
                   <TableHead>Categoria</TableHead>
                   <TableHead>Data</TableHead>
                   <TableHead className="text-right">Valor</TableHead>
@@ -124,10 +134,20 @@ export function ReportsClient({ initialTransactions, initialCategories }: Report
               <TableBody>
                 {transactions.map(t => {
                   const category = getCategory(t.categoryId);
+                  const collaborator = getCollaborator(t.collaboratorId);
                   return (
                     <TableRow key={t.id}>
                       <TableCell>
                         <div className="font-medium">{t.description}</div>
+                      </TableCell>
+                       <TableCell>
+                        <div className="flex items-center gap-3">
+                          <Avatar className="h-8 w-8">
+                            <AvatarImage src={collaborator?.avatarUrl} alt={collaborator?.name} />
+                            <AvatarFallback>{collaborator?.name.charAt(0)}</AvatarFallback>
+                          </Avatar>
+                          <span className="hidden sm:inline-block">{collaborator?.name}</span>
+                        </div>
                       </TableCell>
                       <TableCell>
                         <Badge 
@@ -164,6 +184,7 @@ export function ReportsClient({ initialTransactions, initialCategories }: Report
       <EditTransactionDialog
         transaction={selectedTransaction}
         categories={categories}
+        collaborators={collaborators}
         onEditTransaction={handleEditTransaction}
         open={isEditDialogOpen}
         onOpenChange={setIsEditDialogOpen}

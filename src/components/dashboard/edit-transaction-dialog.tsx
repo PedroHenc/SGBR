@@ -31,11 +31,12 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from "@/hooks/use-toast";
-import type { Transaction, Category } from '@/lib/types';
+import type { Transaction, Category, Collaborator } from '@/lib/types';
 
 interface EditTransactionDialogProps {
   transaction: Transaction | null;
   categories: Category[];
+  collaborators: Collaborator[];
   onEditTransaction: (transaction: Transaction) => void;
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -51,9 +52,12 @@ const formSchema = z.object({
   categoryId: z.string().min(1, {
     message: "Por favor, selecione uma categoria.",
   }),
+  collaboratorId: z.string().min(1, {
+    message: "Por favor, selecione um colaborador.",
+  }),
 });
 
-export function EditTransactionDialog({ transaction, categories, onEditTransaction, open, onOpenChange }: EditTransactionDialogProps) {
+export function EditTransactionDialog({ transaction, categories, collaborators, onEditTransaction, open, onOpenChange }: EditTransactionDialogProps) {
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -66,6 +70,7 @@ export function EditTransactionDialog({ transaction, categories, onEditTransacti
         description: transaction.description,
         amount: transaction.amount,
         categoryId: transaction.categoryId,
+        collaboratorId: transaction.collaboratorId,
       });
     }
   }, [transaction, form]);
@@ -119,6 +124,28 @@ export function EditTransactionDialog({ transaction, categories, onEditTransacti
                     <FormControl>
                       <Input type="number" step="0.01" placeholder="0,00" {...field} />
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+               <FormField
+                control={form.control}
+                name="collaboratorId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Colaborador</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione um colaborador" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {collaborators.map(c => (
+                          <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}

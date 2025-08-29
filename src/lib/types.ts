@@ -7,6 +7,7 @@ export interface Transaction {
   amount: number;
   date: Date;
   categoryId: string;
+  collaboratorId: string;
 }
 
 export interface Category {

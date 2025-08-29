@@ -14,6 +14,7 @@ import { format } from 'date-fns';
 import { TeamCard } from './team-card';
 import { MonthlyReportsChart } from './monthly-reports-chart';
 import { cn } from '@/lib/utils';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 
 interface DashboardClientProps {
   initialTransactions: Transaction[];
@@ -109,18 +110,24 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
   const getCategory = (categoryId: string) => {
     return categories.find(c => c.id === categoryId);
   };
+  
+  const getCollaborator = (collaboratorId: string) => {
+    return collaborators.find(c => c.id === collaboratorId);
+  }
 
   const handleExportRecentCSV = () => {
     const recentTransactions = transactions.slice(0, 5);
-    const csvHeader = ['Descrição', 'Tipo', 'Valor', 'Data', 'Categoria'].join(',');
+    const csvHeader = ['Descrição', 'Tipo', 'Valor', 'Data', 'Categoria', 'Colaborador'].join(',');
     const csvBody = recentTransactions.map(t => {
       const category = getCategory(t.categoryId);
+      const collaborator = getCollaborator(t.collaboratorId);
       return [
         `"${t.description.replace(/"/g, '""')}"`,
         t.type === 'revenue' ? 'Receita' : 'Despesa',
         t.amount,
         format(t.date, 'yyyy-MM-dd HH:mm'),
-        `"${category?.name.replace(/"/g, '""') || 'Sem categoria'}"`
+        `"${category?.name.replace(/"/g, '""') || 'Sem categoria'}"`,
+        `"${collaborator?.name.replace(/"/g, '""') || 'N/A'}"`
       ].join(',');
     }).join('\n');
 
@@ -152,8 +159,8 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
             <p className="text-muted-foreground">Aqui está um resumo do desempenho da sua empresa.</p>
           </div>
           <div className="flex gap-2">
-            <AddTransactionDialog type="revenue" categories={categories} onAddTransaction={handleAddTransaction} />
-            <AddTransactionDialog type="expense" categories={categories} onAddTransaction={handleAddTransaction} />
+            <AddTransactionDialog type="revenue" categories={categories} collaborators={collaborators} onAddTransaction={handleAddTransaction} />
+            <AddTransactionDialog type="expense" categories={categories} collaborators={collaborators} onAddTransaction={handleAddTransaction} />
           </div>
         </div>
 
@@ -187,11 +194,20 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
                 <TableBody>
                   {transactions.slice(0, 5).map(t => {
                     const category = getCategory(t.categoryId);
+                    const collaborator = getCollaborator(t.collaboratorId);
                     return (
                       <TableRow key={t.id} className={cn(animatedRowId === t.id && 'animate-row-cascade')}>
                         <TableCell>
-                          <div className="font-medium">{t.description}</div>
-                          {isClient && <div className="text-sm text-muted-foreground">{format(new Date(t.date), 'dd/MM/yyyy HH:mm')}</div>}
+                           <div className="flex items-center gap-3">
+                            <Avatar className="h-8 w-8 hidden sm:flex">
+                              <AvatarImage src={collaborator?.avatarUrl} alt={collaborator?.name} />
+                              <AvatarFallback>{collaborator?.name.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                            <div>
+                                <div className="font-medium">{t.description}</div>
+                                {isClient && <div className="text-sm text-muted-foreground">{format(new Date(t.date), 'dd/MM/yyyy HH:mm')} por {collaborator?.name}</div>}
+                            </div>
+                          </div>
                         </TableCell>
                         <TableCell>
                           <Badge 
@@ -236,6 +252,7 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
       <EditTransactionDialog
         transaction={selectedTransaction}
         categories={categories}
+        collaborators={collaborators}
         onEditTransaction={handleEditTransaction}
         open={isEditDialogOpen}
         onOpenChange={setIsEditDialogOpen}
