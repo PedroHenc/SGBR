@@ -15,6 +15,7 @@ import { TeamCard } from './team-card';
 import { MonthlyReportsChart } from './monthly-reports-chart';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { EditVaultDialog } from './edit-vault-dialog';
 
 interface DashboardClientProps {
   initialTransactions: Transaction[];
@@ -22,15 +23,14 @@ interface DashboardClientProps {
   initialCollaborators: Collaborator[];
 }
 
-const StatCard = ({ title, value, icon: Icon, trend, trendColor }: { title: string, value: string, icon: React.ElementType, trend?: string, trendColor?: string }) => (
-  <Card>
+const StatCard = ({ title, value, icon: Icon, onClick, className }: { title: string, value: string, icon: React.ElementType, onClick?: () => void, className?: string }) => (
+  <Card onClick={onClick} className={cn(className, onClick && "cursor-pointer hover:bg-muted/50")}>
     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
       <CardTitle className="text-sm font-medium">{title}</CardTitle>
       <Icon className="h-4 w-4 text-muted-foreground" />
     </CardHeader>
     <CardContent>
       <div className="text-2xl font-bold">{value}</div>
-      {trend && <p className={`text-xs text-muted-foreground ${trendColor}`}>{trend}</p>}
     </CardContent>
   </Card>
 );
@@ -41,8 +41,10 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
   const [collaborators] = useState<Collaborator[]>(initialCollaborators);
   
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isVaultDialogOpen, setIsVaultDialogOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [animatedRowId, setAnimatedRowId] = useState<string | null>(null);
+  const [vaultBaseValue, setVaultBaseValue] = useState(7345.67);
 
   const [isClient, setIsClient] = useState(false)
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -146,9 +148,11 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
     setSelectedCategories(categoryIds);
   };
 
-  const vaultBaseValue = 7345.67;
   const currentVaultValue = vaultBaseValue - totalExpenses;
 
+  const handleVaultSave = (newAmount: number) => {
+    setVaultBaseValue(newAmount);
+  };
 
   return (
     <>
@@ -165,8 +169,8 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
-          <StatCard title="Cofre" value={formatCurrency(currentVaultValue)} icon={PiggyBank} trend="+20.1% do último mês" trendColor="text-green-500"/>
-          <StatCard title="Despesas Totais" value={formatCurrency(totalExpenses)} icon={TrendingDown} trend="+12.5% do último mês" trendColor="text-red-500"/>
+          <StatCard title="Cofre" value={formatCurrency(currentVaultValue)} icon={PiggyBank} onClick={() => setIsVaultDialogOpen(true)} />
+          <StatCard title="Despesas Totais" value={formatCurrency(totalExpenses)} icon={TrendingDown} />
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
@@ -256,6 +260,12 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
         onEditTransaction={handleEditTransaction}
         open={isEditDialogOpen}
         onOpenChange={setIsEditDialogOpen}
+      />
+      <EditVaultDialog
+        currentAmount={vaultBaseValue}
+        onSave={handleVaultSave}
+        open={isVaultDialogOpen}
+        onOpenChange={setIsVaultDialogOpen}
       />
     </>
   );
