@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { Edit, FileDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { AddTransactionDialog } from '@/components/dashboard/add-transaction-dialog';
@@ -19,6 +19,8 @@ interface ReportsClientProps {
   initialCollaborators: Collaborator[];
 }
 
+const ITEMS_PER_PAGE = 10;
+
 export function ReportsClient({ initialTransactions, initialCategories, initialCollaborators }: ReportsClientProps) {
   const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions.map(t => ({...t, date: new Date(t.date)})));
   const [categories, setCategories] = useState<Category[]>(initialCategories);
@@ -26,6 +28,13 @@ export function ReportsClient({ initialTransactions, initialCategories, initialC
 
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
+  
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = Math.ceil(transactions.length / ITEMS_PER_PAGE);
+  const paginatedTransactions = transactions.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
   const [isClient, setIsClient] = useState(false)
 
@@ -96,6 +105,14 @@ export function ReportsClient({ initialTransactions, initialCategories, initialC
     }
   };
 
+  const handlePreviousPage = () => {
+    setCurrentPage(prev => Math.max(prev - 1, 1));
+  }
+
+  const handleNextPage = () => {
+    setCurrentPage(prev => Math.min(prev + 1, totalPages));
+  }
+
   return (
     <>
       <div className="flex flex-col gap-6">
@@ -132,7 +149,7 @@ export function ReportsClient({ initialTransactions, initialCategories, initialC
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {transactions.map(t => {
+                {paginatedTransactions.map(t => {
                   const category = getCategory(t.categoryId);
                   const collaborator = getCollaborator(t.collaboratorId);
                   return (
@@ -179,6 +196,31 @@ export function ReportsClient({ initialTransactions, initialCategories, initialC
               </TableBody>
             </Table>
           </CardContent>
+          <CardFooter>
+            <div className="flex items-center justify-between w-full">
+                <span className="text-sm text-muted-foreground">
+                    Página {currentPage} de {totalPages}
+                </span>
+                <div className="flex items-center gap-2">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handlePreviousPage}
+                        disabled={currentPage === 1}
+                    >
+                        Anterior
+                    </Button>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleNextPage}
+                        disabled={currentPage === totalPages}
+                    >
+                        Próximo
+                    </Button>
+                </div>
+            </div>
+          </CardFooter>
         </Card>
       </div>
       <EditTransactionDialog
