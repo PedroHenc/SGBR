@@ -1,14 +1,15 @@
+
 import { AppLayout } from "@/components/layout/app-layout";
 import { ReportsClient } from "@/components/reports/reports-client";
 import type { Transaction, Category, Collaborator } from "@/lib/types";
 
 // In a real app, this data would come from a database
-const mockTransactions: Transaction[] = [
-  { id: '1', type: 'revenue', description: 'Projeto de web design para Acme Corp', amount: 2500, date: new Date('2024-07-01T00:00:00'), categoryId: '1', collaboratorId: '1' },
-  { id: '2', type: 'expense', description: 'Assinatura mensal da Adobe Creative Cloud', amount: 99, date: new Date('2024-07-03T00:00:00'), categoryId: '3', collaboratorId: '2' },
-  { id: '3', type: 'revenue', description: 'Serviços de consultoria para Tech Solutions', amount: 1200, date: new Date('2024-07-10T00:00:00'), categoryId: '2', collaboratorId: '1' },
-  { id: '4', type: 'expense', description: 'Material de escritório da Staples', amount: 150, date: new Date('2024-07-12T00:00:00'), categoryId: '4', collaboratorId: '3' },
-  { id: '5', type: 'expense', description: 'Hospedagem Vercel para o site da empresa', amount: 75, date: new Date('2024-07-15T00:00:00'), categoryId: '3', collaboratorId: '4' },
+const mockTransactions: Omit<Transaction, 'date'> & { date: string }[] = [
+  { id: '1', type: 'revenue', description: 'Projeto de web design para Acme Corp', amount: 2500, date: new Date('2024-07-01T00:00:00').toISOString(), categoryId: '1', collaboratorId: '1' },
+  { id: '2', type: 'expense', description: 'Assinatura mensal da Adobe Creative Cloud', amount: 99, date: new Date('2024-07-03T00:00:00').toISOString(), categoryId: '3', collaboratorId: '2' },
+  { id: '3', type: 'revenue', description: 'Serviços de consultoria para Tech Solutions', amount: 1200, date: new Date('2024--10T00:00:00').toISOString(), categoryId: '2', collaboratorId: '1' },
+  { id: '4', type: 'expense', description: 'Material de escritório da Staples', amount: 150, date: new Date('2024-07-12T00:00:00').toISOString(), categoryId: '4', collaboratorId: '3' },
+  { id: '5', type: 'expense', description: 'Hospedagem Vercel para o site da empresa', amount: 75, date: new Date('2024-07-15T00:00:00').toISOString(), categoryId: '3', collaboratorId: '4' },
 ];
 
 const mockCategories: Category[] = [

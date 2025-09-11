@@ -1,3 +1,5 @@
+"use client";
+
 import { AppLayout } from "@/components/layout/app-layout";
 import { CollaboratorsClient } from "@/components/collaborators/collaborators-client";
 import type { Collaborator } from "@/lib/types";

@@ -13,8 +13,10 @@ import type { Transaction, Category, Collaborator } from '@/lib/types';
 import { format } from 'date-fns';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 
+type SerializableTransaction = Omit<Transaction, 'date'> & { date: string };
+
 interface ReportsClientProps {
-  initialTransactions: Transaction[];
+  initialTransactions: SerializableTransaction[];
   initialCategories: Category[];
   initialCollaborators: Collaborator[];
 }
@@ -22,7 +24,7 @@ interface ReportsClientProps {
 const ITEMS_PER_PAGE = 5;
 
 export function ReportsClient({ initialTransactions, initialCategories, initialCollaborators }: ReportsClientProps) {
-  const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions.map(t => ({...t, date: new Date(t.date)})));
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Category[]>(initialCategories);
   const [collaborators, setCollaborators] = useState<Collaborator[]>(initialCollaborators);
 
@@ -39,8 +41,9 @@ export function ReportsClient({ initialTransactions, initialCategories, initialC
   const [isClient, setIsClient] = useState(false)
 
   useEffect(() => {
-    setIsClient(true)
-  }, [])
+    setIsClient(true);
+    setTransactions(initialTransactions.map(t => ({...t, date: new Date(t.date)})));
+  }, [initialTransactions])
   
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('pt-BR', {

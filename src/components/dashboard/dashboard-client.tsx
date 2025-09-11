@@ -20,8 +20,10 @@ import { ResetExpensesDialog } from './reset-expenses-dialog';
 import { useToast } from '@/hooks/use-toast';
 
 
+type SerializableTransaction = Omit<Transaction, 'date'> & { date: string };
+
 interface DashboardClientProps {
-  initialTransactions: Transaction[];
+  initialTransactions: SerializableTransaction[];
   initialCategories: Category[];
   initialCollaborators: Collaborator[];
 }
@@ -39,7 +41,7 @@ const StatCard = ({ title, value, icon: Icon, onClick, className }: { title: str
 );
 
 export function DashboardClient({ initialTransactions, initialCategories, initialCollaborators }: DashboardClientProps) {
-  const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions.map(t => ({...t, date: new Date(t.date)})));
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [categories] = useState<Category[]>(initialCategories);
   const [collaborators] = useState<Collaborator[]>(initialCollaborators);
   
@@ -55,8 +57,9 @@ export function DashboardClient({ initialTransactions, initialCategories, initia
   const { toast } = useToast();
 
   useEffect(() => {
-    setIsClient(true)
-  }, [])
+    setIsClient(true);
+    setTransactions(initialTransactions.map(t => ({...t, date: new Date(t.date)})));
+  }, [initialTransactions])
   
   const { totalExpenses } = useMemo(() => {
     const totalExpenses = transactions
