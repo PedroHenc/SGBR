@@ -9,6 +9,10 @@ const api = axios.create({
         return api.get<benneiro[]>("/benneiros")
     }
 
-    export function postBenneiro() {
-        return api.post<benneiro[]>("/benneiros")
+    export function postBenneiro(data: Omit<benneiro, 'id'>) {
+        return api.post<benneiro>("/benneiros", data)
+    }
+
+    export function putBenneiro(id: number, data: Partial<benneiro>) {
+        return api.put<benneiro>(`/benneiros/${id}`, data)
     }

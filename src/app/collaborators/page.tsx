@@ -33,7 +33,7 @@ export default function CollaboratorsPage() {
       id: String(b.id),
       name: b.nome,
       role: b.cargo,
-      avatarUrl: `https://i.pravatar.cc/150?u=${b.id}`
+      avatarUrl: b.foto_perfil
     }))
     .sort((a, b) => {
       const roleAIndex = availableRoles.indexOf(a.role);

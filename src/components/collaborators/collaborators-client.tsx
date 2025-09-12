@@ -19,6 +19,7 @@ import { EditCollaboratorDialog } from './edit-collaborator-dialog';
 import { DeleteCollaboratorDialog } from './delete-collaborator-dialog';
 import { Label } from '../ui/label';
 import { cn } from '@/lib/utils';
+import useMutationBenneiro from '@/hooks/useMutationBenneiro';
 
 interface CollaboratorsClientProps {
   initialCollaborators: Collaborator[];
@@ -43,6 +44,7 @@ export function CollaboratorsClient({ initialCollaborators, availableRoles }: Co
   const { toast } = useToast();
   const [preview, setPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { postBenneiro } = useMutationBenneiro();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -54,13 +56,12 @@ export function CollaboratorsClient({ initialCollaborators, availableRoles }: Co
   });
   
   function onSubmit(values: z.infer<typeof formSchema>) {
-    const newCollaborator: Collaborator = {
-      id: String(collaborators.length + 1),
-      name: values.name,
-      role: values.role,
-      avatarUrl: preview || values.avatarUrl,
-    };
-    setCollaborators(prev => [...prev, newCollaborator]);
+    postBenneiro.mutate({
+      nome: values.name,
+      cargo: values.role,
+      foto_perfil: preview || undefined
+    });
+
     toast({
       title: "Colaborador Adicionado",
       description: `"${values.name}" foi adicionado com sucesso.`,
@@ -194,8 +195,8 @@ export function CollaboratorsClient({ initialCollaborators, availableRoles }: Co
                         </FormItem>
                       )}
                     />
-                    <Button type="submit" disabled={form.formState.isSubmitting}>
-                      {form.formState.isSubmitting ? (
+                    <Button type="submit" disabled={form.formState.isSubmitting || postBenneiro.isPending}>
+                      {form.formState.isSubmitting || postBenneiro.isPending ? (
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       ) : (
                         <Plus className="mr-2 h-4 w-4" />

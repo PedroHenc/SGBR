@@ -30,6 +30,7 @@ import type { Collaborator } from '@/lib/types';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Label } from '../ui/label';
 import { cn } from '@/lib/utils';
+import useMutationBenneiro from '@/hooks/useMutationBenneiro';
 
 interface EditCollaboratorDialogProps {
   collaborator: Collaborator | null;
@@ -53,6 +54,7 @@ export function EditCollaboratorDialog({ collaborator, onEditCollaborator, open,
   const { toast } = useToast();
   const [preview, setPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { putBenneiro } = useMutationBenneiro();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -71,12 +73,14 @@ export function EditCollaboratorDialog({ collaborator, onEditCollaborator, open,
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     if (!collaborator) return;
-
-    onEditCollaborator({
-      ...collaborator,
-      ...values,
-      avatarUrl: preview || values.avatarUrl,
+    
+    putBenneiro.mutate({
+      id: Number(collaborator.id),
+      nome: values.name,
+      cargo: values.role,
+      foto_perfil: preview || undefined
     });
+
     toast({
       title: "Colaborador Atualizado",
       description: `"${values.name}" foi atualizado com sucesso.`,
@@ -178,8 +182,8 @@ export function EditCollaboratorDialog({ collaborator, onEditCollaborator, open,
                 )}
               />
               <DialogFooter>
-                <Button type="submit" disabled={form.formState.isSubmitting}>
-                  {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                <Button type="submit" disabled={form.formState.isSubmitting || putBenneiro.isPending}>
+                  {form.formState.isSubmitting || putBenneiro.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Salvar Alterações
                 </Button>
               </DialogFooter>
