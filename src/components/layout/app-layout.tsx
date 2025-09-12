@@ -47,7 +47,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           <Link href="/" className="flex items-center gap-2">
             <Logo className="w-7 h-7" />
             <span className="text-xl font-semibold group-data-[collapsible=icon]:hidden">
-             Benny's Motorworks shop
+             Benny's Motorworks
             </span>
           </Link>
         </SidebarHeader>
