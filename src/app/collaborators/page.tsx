@@ -14,6 +14,7 @@ export const availableRoles = [
   'Gerencia',
   'Painter',
   'Tuner',
+
   'Trainee',
   'Aposentado'
 ];
@@ -35,8 +36,15 @@ export default function CollaboratorsPage() {
       avatarUrl: `https://i.pravatar.cc/150?u=${b.id}`
     }))
     .sort((a, b) => {
-      if (a.role < b.role) return -1;
-      if (a.role > b.role) return 1;
+      const roleAIndex = availableRoles.indexOf(a.role);
+      const roleBIndex = availableRoles.indexOf(b.role);
+      
+      const effectiveRoleAIndex = roleAIndex === -1 ? Infinity : roleAIndex;
+      const effectiveRoleBIndex = roleBIndex === -1 ? Infinity : roleBIndex;
+
+      if (effectiveRoleAIndex < effectiveRoleBIndex) return -1;
+      if (effectiveRoleAIndex > effectiveRoleBIndex) return 1;
+      
       return Number(a.id) - Number(b.id);
     }) || [];
 
