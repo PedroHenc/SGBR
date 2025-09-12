@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Plus, Loader2, User, Edit, Trash2, UploadCloud, X } from 'lucide-react';
 import { Button, buttonVariants } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHeader, TableRow, TableHead } from '@/components/ui/table';
@@ -25,6 +25,8 @@ interface CollaboratorsClientProps {
   initialCollaborators: Collaborator[];
   availableRoles: string[];
 }
+
+const ITEMS_PER_PAGE = 5;
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -45,6 +47,13 @@ export function CollaboratorsClient({ initialCollaborators, availableRoles }: Co
   const [preview, setPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { postBenneiro } = useMutationBenneiro();
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = Math.ceil(collaborators.length / ITEMS_PER_PAGE);
+  const paginatedCollaborators = collaborators.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -114,6 +123,14 @@ export function CollaboratorsClient({ initialCollaborators, availableRoles }: Co
     if (fileInputRef.current) {
         fileInputRef.current.value = "";
     }
+  }
+
+  const handlePreviousPage = () => {
+    setCurrentPage(prev => Math.max(prev - 1, 1));
+  }
+
+  const handleNextPage = () => {
+    setCurrentPage(prev => Math.min(prev + 1, totalPages));
   }
 
   return (
@@ -225,7 +242,7 @@ export function CollaboratorsClient({ initialCollaborators, availableRoles }: Co
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {collaborators.map(collaborator => (
+                    {paginatedCollaborators.map(collaborator => (
                       <TableRow key={collaborator.id}>
                         <TableCell className="font-medium">
                           <div className="flex items-center gap-3">
@@ -252,6 +269,33 @@ export function CollaboratorsClient({ initialCollaborators, availableRoles }: Co
                   </TableBody>
                 </Table>
               </CardContent>
+              {totalPages > 1 && (
+                <CardFooter>
+                    <div className="flex items-center justify-between w-full">
+                        <span className="text-sm text-muted-foreground">
+                            Página {currentPage} de {totalPages}
+                        </span>
+                        <div className="flex items-center gap-2">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={handlePreviousPage}
+                                disabled={currentPage === 1}
+                            >
+                                Anterior
+                            </Button>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={handleNextPage}
+                                disabled={currentPage === totalPages}
+                            >
+                                Próximo
+                            </Button>
+                        </div>
+                    </div>
+                </CardFooter>
+              )}
             </Card>
           </div>
         </div>
