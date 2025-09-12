@@ -1,3 +1,4 @@
+
 "use client";
 
 import { AppLayout } from "@/components/layout/app-layout";
@@ -26,12 +27,18 @@ export default function CollaboratorsPage() {
     refetchOnMount: true,
   });
 
-  const collaborators: Collaborator[] = benneiroData?.data.map((b: benneiro) => ({
-    id: String(b.id),
-    name: b.nome,
-    role: b.cargo,
-    avatarUrl: `https://i.pravatar.cc/150?u=${b.id}`
-  })) || [];
+  const collaborators: Collaborator[] = benneiroData?.data
+    .map((b: benneiro) => ({
+      id: String(b.id),
+      name: b.nome,
+      role: b.cargo,
+      avatarUrl: `https://i.pravatar.cc/150?u=${b.id}`
+    }))
+    .sort((a, b) => {
+      if (a.role < b.role) return -1;
+      if (a.role > b.role) return 1;
+      return Number(a.id) - Number(b.id);
+    }) || [];
 
   if (isLoading) {
     return (

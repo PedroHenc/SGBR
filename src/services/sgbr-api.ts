@@ -2,7 +2,7 @@ import axios from "axios";
 import { benneiro } from "./types";
 
 const api = axios.create({
-    baseURL: process.env.localHost_API})
+    baseURL: "https://sgbr-api.up.railway.app/"})
 
 
     export function getBenneiro() {
