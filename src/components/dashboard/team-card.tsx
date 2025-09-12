@@ -2,6 +2,7 @@
 "use client";
 
 import Link from "next/link";
+import { useMemo } from "react";
 import { ArrowUpRight, FileText } from "lucide-react";
 import type { Collaborator, Transaction } from "@/lib/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -25,13 +26,23 @@ export function TeamCard({ collaborators, transactions }: TeamCardProps) {
     return transactions.filter(t => t.collaboratorId === collaboratorId).length;
   }
 
+  const topCollaborators = useMemo(() => {
+    return collaborators
+      .map(c => ({
+        ...c,
+        reportCount: getReportCount(c.id),
+      }))
+      .sort((a, b) => b.reportCount - a.reportCount)
+      .slice(0, 5);
+  }, [collaborators, transactions]);
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center">
         <div className="grid gap-2">
           <CardTitle>Equipe</CardTitle>
           <CardDescription>
-            Uma visão geral dos membros da sua equipe.
+            Os 5 colaboradores mais ativos.
           </CardDescription>
         </div>
         <Button asChild size="sm" className="ml-auto gap-1">
@@ -42,7 +53,7 @@ export function TeamCard({ collaborators, transactions }: TeamCardProps) {
         </Button>
       </CardHeader>
       <CardContent className="grid gap-6">
-        {collaborators.map((collaborator) => (
+        {topCollaborators.map((collaborator) => (
           <div key={collaborator.id} className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <Avatar className="hidden h-9 w-9 sm:flex">
@@ -58,7 +69,7 @@ export function TeamCard({ collaborators, transactions }: TeamCardProps) {
             </div>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <FileText className="h-4 w-4" />
-              <span>{getReportCount(collaborator.id)}</span>
+              <span>{collaborator.reportCount}</span>
             </div>
           </div>
         ))}
