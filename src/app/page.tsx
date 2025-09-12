@@ -2,6 +2,8 @@
 import { AppLayout } from "@/components/layout/app-layout";
 import { DashboardClient } from "@/components/dashboard/dashboard-client";
 import type { Transaction, Category, Collaborator } from "@/lib/types";
+import { getBenneiro } from "@/services/sgbr-api";
+import type { benneiro } from "@/services/types";
 
 // In a real app, this data would come from a database
 const mockTransactions: Omit<Transaction, 'date'> & { date: string }[] = [
@@ -21,17 +23,40 @@ const mockCategories: Category[] = [
   { id: '6', name: 'Marketing', color: '#f59e0b' },
 ];
 
-const mockCollaborators: Collaborator[] = [
-    { id: '1', name: 'Ana Silva', role: 'Gerente', avatarUrl: 'https://i.pravatar.cc/150?u=a042581f4e29026024d' },
-    { id: '2', name: 'Carlos Oliveira', role: 'Diretor(a) Financeiro(a)', avatarUrl: 'https://i.pravatar.cc/150?u=a042581f4e29026704d' },
-    { id: '3', name: 'Beatriz Costa', role: 'Trainee', avatarUrl: 'https://i.pravatar.cc/150?u=a04258114e29026702d' },
-    { id: '4', name: 'Daniel Martins', role: 'Painter', avatarUrl: 'https://i.pravatar.cc/150?u=a042581f4e29026708c' },
+const availableRoles = [
+  'Presidente',
+  'Gerencia',
+  'Painter',
+  'Tuner',
+  'Trainee',
+  'Aposentado'
 ];
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
   const transactions = mockTransactions;
   const categories = mockCategories;
-  const collaborators = mockCollaborators;
+  
+  const benneiroData = await getBenneiro();
+
+  const collaborators: Collaborator[] = benneiroData?.data
+    .map((b: benneiro) => ({
+      id: String(b.id),
+      name: b.nome,
+      role: b.cargo,
+      avatarUrl: `https://i.pravatar.cc/150?u=${b.id}`
+    }))
+    .sort((a, b) => {
+      const roleAIndex = availableRoles.indexOf(a.role);
+      const roleBIndex = availableRoles.indexOf(b.role);
+      
+      const effectiveRoleAIndex = roleAIndex === -1 ? Infinity : roleAIndex;
+      const effectiveRoleBIndex = roleBIndex === -1 ? Infinity : roleBIndex;
+
+      if (effectiveRoleAIndex < effectiveRoleBIndex) return -1;
+      if (effectiveRoleAIndex > effectiveRoleBIndex) return 1;
+      
+      return Number(a.id) - Number(b.id);
+    }) || [];
 
   return (
     <AppLayout>
