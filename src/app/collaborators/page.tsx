@@ -5,19 +5,12 @@ import { CollaboratorsClient } from "@/components/collaborators/collaborators-cl
 import type { Collaborator } from "@/lib/types";
 import { useQuery } from "@tanstack/react-query";
 import { getBenneiro } from "@/services/sgbr-api";
-
-// In a real app, this data would come from a database
-const mockCollaborators: Collaborator[] = [
-    { id: '1', name: 'Ana Silva', role: 'Gerente', avatarUrl: 'https://i.pravatar.cc/150?u=a042581f4e29026024d' },
-    { id: '2', name: 'Carlos Oliveira', role: 'Diretor(a) Financeiro(a)', avatarUrl: 'https://i.pravatar.cc/150?u=a042581f4e29026704d' },
-    { id: '3', name: 'Beatriz Costa', role: 'Trainee', avatarUrl: 'https://i.pravatar.cc/150?u=a04258114e29026702d' },
-    { id: '4', name: 'Daniel Martins', role: 'Painter', avatarUrl: 'https://i.pravatar.cc/150?u=a042581f4e29026708c' },
-];
+import type { benneiro } from "@/services/types";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const availableRoles = [
-  'Presidente(a)',
-  'Diretor(a) Financeiro(a)',
-  'Gerente',
+  'Presidente',
+  'Gerencia',
   'Painter',
   'Tuner',
   'Trainee',
@@ -25,20 +18,45 @@ export const availableRoles = [
 ];
 
 export default function CollaboratorsPage() {
-  const collaborators = mockCollaborators;
 
-  const benneiroData = useQuery({
+  const { data: benneiroData, isLoading } = useQuery({
     queryKey: ["benneiros"],
     queryFn: getBenneiro,
-    refetchOnWindowFocus:true,
-    refetchOnMount:true,
-  }) || [];
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
+  });
 
-  console.log("get benneiro(s)", benneiroData.data?.data)
+  const collaborators: Collaborator[] = benneiroData?.data.map((b: benneiro) => ({
+    id: String(b.id),
+    name: b.nome,
+    role: b.cargo,
+    avatarUrl: `https://i.pravatar.cc/150?u=${b.id}`
+  })) || [];
+
+  if (isLoading) {
+    return (
+      <AppLayout>
+        <div className="space-y-6">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Gerenciar Colaboradores</h1>
+            <p className="text-muted-foreground">Adicione novos colaboradores ou visualize a equipe existente.</p>
+          </div>
+          <div className="grid gap-6 md:grid-cols-5">
+            <div className="md:col-span-2">
+              <Skeleton className="h-[500px] w-full" />
+            </div>
+            <div className="md:col-span-3">
+              <Skeleton className="h-[500px] w-full" />
+            </div>
+          </div>
+        </div>
+      </AppLayout>
+    )
+  }
 
   return (
     <AppLayout>
-      <CollaboratorsClient 
+      <CollaboratorsClient
         initialCollaborators={collaborators}
         availableRoles={availableRoles}
       />
