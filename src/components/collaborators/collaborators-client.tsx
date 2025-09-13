@@ -38,14 +38,7 @@ import useMutationBenneiro from "@/hooks/useMutationBenneiro";
 import type { Collaborator } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Edit,
-  Loader2,
-  Plus,
-  Trash2,
-  UploadCloud,
-  X,
-} from "lucide-react";
+import { Edit, Loader2, Plus, Trash2, UploadCloud, X } from "lucide-react";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -79,8 +72,9 @@ export function CollaboratorsClient(
   );
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [selectedCollaborator, setSelectedCollaborator] =
-    useState<Collaborator | null>(null);
+  const [selectedCollaborator, setSelectedCollaborator] = useState<
+    Collaborator | null
+  >(null);
   const { toast } = useToast();
   const [preview, setPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -105,7 +99,7 @@ export function CollaboratorsClient(
   function onSubmit(values: z.infer<typeof formSchema>) {
     // Gera um novo ID baseado nos IDs atuais
     const maxId = collaborators.length > 0
-      ? Math.max(...collaborators.map(c => Number(c.id)))
+      ? Math.max(...collaborators.map((c) => Number(c.id)))
       : 0;
     const newId = maxId + 1;
 
@@ -116,7 +110,7 @@ export function CollaboratorsClient(
       avatarUrl: preview || undefined,
     };
 
-    setCollaborators(prev => [newCollaborator, ...prev]);
+    setCollaborators((prev) => [newCollaborator, ...prev]);
 
     postBenneiro.mutate({
       nome: values.name,
@@ -137,18 +131,20 @@ export function CollaboratorsClient(
   }
 
   const handleEditCollaborator = (updatedCollaborator: Collaborator) => {
-    setCollaborators(prev =>
-      prev.map(c => (c.id === updatedCollaborator.id ? updatedCollaborator : c)),
+    setCollaborators((prev) =>
+      prev.map(
+        (c) => (c.id === updatedCollaborator.id ? updatedCollaborator : c),
+      )
     );
   };
 
   const handleDeleteCollaborator = (collaboratorId: string) => {
-    const collaborator = collaborators.find(c => c.id === collaboratorId);
+    const collaborator = collaborators.find((c) => c.id === collaboratorId);
     if (!collaborator) return;
 
     deleteBenneiro.mutate(Number(collaboratorId), {
       onSuccess: () => {
-        setCollaborators(prev => prev.filter(c => c.id !== collaboratorId));
+        setCollaborators((prev) => prev.filter((c) => c.id !== collaboratorId));
         toast({
           title: "Colaborador Excluído",
           description: `"${collaborator.name}" foi excluído com sucesso.`,
@@ -157,7 +153,8 @@ export function CollaboratorsClient(
       onError: () => {
         toast({
           title: "Erro ao Excluir",
-          description: `Não foi possível excluir o colaborador "${collaborator.name}".`,
+          description:
+            `Não foi possível excluir o colaborador "${collaborator.name}".`,
           variant: "destructive",
         });
       },
@@ -193,11 +190,11 @@ export function CollaboratorsClient(
   };
 
   const handlePreviousPage = () => {
-    setCurrentPage(prev => Math.max(prev - 1, 1));
+    setCurrentPage((prev) => Math.max(prev - 1, 1));
   };
 
   const handleNextPage = () => {
-    setCurrentPage(prev => Math.min(prev + 1, totalPages));
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
   };
 
   return (
@@ -306,7 +303,7 @@ export function CollaboratorsClient(
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {availableRoles.map(role => (
+                              {availableRoles.map((role) => (
                                 <SelectItem key={role} value={role}>
                                   {role}
                                 </SelectItem>
@@ -320,9 +317,8 @@ export function CollaboratorsClient(
 
                     <Button
                       type="submit"
-                      disabled={
-                        form.formState.isSubmitting || postBenneiro.isPending
-                      }
+                      disabled={form.formState.isSubmitting ||
+                        postBenneiro.isPending}
                     >
                       {form.formState.isSubmitting || postBenneiro.isPending
                         ? <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -353,7 +349,7 @@ export function CollaboratorsClient(
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {paginatedCollaborators.map(collaborator => (
+                    {paginatedCollaborators.map((collaborator) => (
                       <TableRow key={collaborator.id}>
                         <TableCell className="font-medium">
                           <div className="flex items-center gap-3">
@@ -374,7 +370,8 @@ export function CollaboratorsClient(
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => openEditDialog(collaborator)}
+                            onClick={() =>
+                              openEditDialog(collaborator)}
                           >
                             <Edit className="h-4 w-4" />
                             <span className="sr-only">Editar</span>

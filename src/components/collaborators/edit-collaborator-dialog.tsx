@@ -223,7 +223,7 @@ export function EditCollaboratorDialog(
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {availableRoles.map(role => (
+                        {availableRoles.map((role) => (
                           <SelectItem key={role} value={role}>
                             {role}
                           </SelectItem>
@@ -237,7 +237,8 @@ export function EditCollaboratorDialog(
               <DialogFooter>
                 <Button
                   type="submit"
-                  disabled={form.formState.isSubmitting || putBenneiro.isPending}
+                  disabled={form.formState.isSubmitting ||
+                    putBenneiro.isPending}
                 >
                   {(form.formState.isSubmitting || putBenneiro.isPending) && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

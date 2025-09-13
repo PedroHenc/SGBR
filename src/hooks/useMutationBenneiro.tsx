@@ -1,4 +1,9 @@
-import { getBenneiros, postBenneiro, putBenneiro } from "@/services/sgbr-api";
+import {
+  deleteBenneiro,
+  getBenneiros,
+  postBenneiro,
+  putBenneiro,
+} from "@/services/sgbr-api";
 import { benneiro } from "@/services/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -26,10 +31,18 @@ const useMutationBenneiro = () => {
     },
   });
 
-    return {
-      getBenneiro: getBenneirosMutate,
+  const delBenneiroMutate = useMutation<any, Error, benneiro>({
+    mutationFn: (data) => deleteBenneiro(data.id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["benneiros"] });
+    },
+  });
+
+  return {
+    getBenneiro: getBenneirosMutate,
     postBenneiro: postBenneiroMutate,
     putBenneiro: putBenneiroMutate,
+    deleteBenneiro: delBenneiroMutate,
   };
 };
 
