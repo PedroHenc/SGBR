@@ -11,7 +11,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { buttonVariants } from "@/components/ui/button";
-import type { Collaborator } from '@/lib/types';
+import type { Collaborator } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 interface DeleteCollaboratorDialogProps {
@@ -21,7 +21,10 @@ interface DeleteCollaboratorDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function DeleteCollaboratorDialog({ collaborator, onDeleteCollaborator, open, onOpenChange }: DeleteCollaboratorDialogProps) {
+export function DeleteCollaboratorDialog(
+  { collaborator, onDeleteCollaborator, open, onOpenChange }:
+    DeleteCollaboratorDialogProps,
+) {
   if (!collaborator) {
     return null;
   }
@@ -38,7 +41,8 @@ export function DeleteCollaboratorDialog({ collaborator, onDeleteCollaborator, o
           <AlertDialogTitle>Excluir Colaborador</AlertDialogTitle>
           <AlertDialogDescription>
             Tem certeza que deseja excluir o colaborador{" "}
-            <span className="font-bold">{collaborator.name}</span>? Esta ação não pode ser desfeita.
+            <span className="font-bold">{collaborator.name}</span>? Esta ação
+            não pode ser desfeita.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

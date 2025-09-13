@@ -1,12 +1,11 @@
-
 "use client";
 
-import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Loader2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -14,7 +13,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -22,8 +21,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 
 interface EditVaultDialogProps {
@@ -39,7 +38,9 @@ const formSchema = z.object({
   }),
 });
 
-export function EditVaultDialog({ currentAmount, onSave, open, onOpenChange }: EditVaultDialogProps) {
+export function EditVaultDialog(
+  { currentAmount, onSave, open, onOpenChange }: EditVaultDialogProps,
+) {
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -69,7 +70,8 @@ export function EditVaultDialog({ currentAmount, onSave, open, onOpenChange }: E
         <DialogHeader>
           <DialogTitle>Editar Valor do Cofre</DialogTitle>
           <DialogDescription>
-            Insira o novo valor base para o seu cofre. As despesas serão subtraídas deste valor.
+            Insira o novo valor base para o seu cofre. As despesas serão
+            subtraídas deste valor.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -81,7 +83,12 @@ export function EditVaultDialog({ currentAmount, onSave, open, onOpenChange }: E
                 <FormItem>
                   <FormLabel>Valor Base do Cofre (R$)</FormLabel>
                   <FormControl>
-                    <Input type="number" step="0.01" placeholder="0,00" {...field} />
+                    <Input
+                      type="number"
+                      step="0.01"
+                      placeholder="0,00"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -89,7 +96,9 @@ export function EditVaultDialog({ currentAmount, onSave, open, onOpenChange }: E
             />
             <DialogFooter>
               <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {form.formState.isSubmitting && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
                 Salvar Alterações
               </Button>
             </DialogFooter>

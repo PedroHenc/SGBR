@@ -1,9 +1,15 @@
-
 "use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart2, Briefcase, List, Settings, Users, ExternalLink } from "lucide-react";
+import {
+  BarChart2,
+  Briefcase,
+  ExternalLink,
+  List,
+  Settings,
+  Users,
+} from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,15 +23,15 @@ import {
 import {
   Sidebar,
   SidebarContent,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
   SidebarFooter,
   SidebarGroup,
+  SidebarHeader,
+  SidebarInset,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { ThemeSwitcher } from "./theme-switcher";
 import { Logo } from "./logo";
@@ -47,7 +53,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           <Link href="/" className="flex items-center gap-2">
             <Logo className="w-7 h-7" />
             <span className="text-xl font-semibold group-data-[collapsible=icon]:hidden">
-             Benny's Motorworks
+              Benny's Motorworks
             </span>
           </Link>
         </SidebarHeader>
@@ -74,21 +80,32 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         <SidebarFooter className="p-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="justify-start gap-2 w-full px-2">
+              <Button
+                variant="ghost"
+                className="justify-start gap-2 w-full px-2"
+              >
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src="https://placehold.co/40x40.png" alt="User" data-ai-hint="user avatar" />
+                  <AvatarImage
+                    src="https://placehold.co/40x40.png"
+                    alt="User"
+                    data-ai-hint="user avatar"
+                  />
                   <AvatarFallback>AU</AvatarFallback>
                 </Avatar>
                 <div className="text-left group-data-[collapsible=icon]:hidden">
                   <p className="font-medium text-sm">Usuário Admin</p>
-                  <p className="text-xs text-muted-foreground">bennysrh@lifeinvader.com</p>
+                  <p className="text-xs text-muted-foreground">
+                    bennysrh@lifeinvader.com
+                  </p>
                 </div>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56" align="end" forceMount>
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium leading-none">Usuário Admin</p>
+                  <p className="text-sm font-medium leading-none">
+                    Usuário Admin
+                  </p>
                   <p className="text-xs leading-none text-muted-foreground">
                     bennysrh@lifeinvader.com
                   </p>
@@ -96,11 +113,13 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <ThemeSwitcher />
-              {/* <DropdownMenuItem>
+              {
+                /* <DropdownMenuItem>
                 <Settings className="mr-2 h-4 w-4" />
                 <span>Configurações</span>
               </DropdownMenuItem>
-              <DropdownMenuItem>Sair</DropdownMenuItem> */}
+              <DropdownMenuItem>Sair</DropdownMenuItem> */
+              }
             </DropdownMenuContent>
           </DropdownMenu>
         </SidebarFooter>
@@ -110,7 +129,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           <SidebarTrigger className="sm:hidden" />
           <div className="flex flex-1 items-center justify-end">
             <Button asChild color="red" size="lg">
-              <a href="https://google.com" target="_blank" rel="noopener noreferrer">
+              <a
+                href="https://google.com"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <ExternalLink className="mr-2 h-4 w-6" />
                 Trabalhar
               </a>

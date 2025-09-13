@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Loader2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -13,7 +13,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -21,17 +21,17 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import type { Transaction, Category, Collaborator } from '@/lib/types';
+import type { Category, Collaborator, Transaction } from "@/lib/types";
 
 interface EditTransactionDialogProps {
   transaction: Transaction | null;
@@ -57,7 +57,16 @@ const formSchema = z.object({
   }),
 });
 
-export function EditTransactionDialog({ transaction, categories, collaborators, onEditTransaction, open, onOpenChange }: EditTransactionDialogProps) {
+export function EditTransactionDialog(
+  {
+    transaction,
+    categories,
+    collaborators,
+    onEditTransaction,
+    open,
+    onOpenChange,
+  }: EditTransactionDialogProps,
+) {
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -78,9 +87,9 @@ export function EditTransactionDialog({ transaction, categories, collaborators, 
   function onSubmit(values: z.infer<typeof formSchema>) {
     if (!transaction) return;
 
-    onEditTransaction({ 
-        ...transaction,
-        ...values,
+    onEditTransaction({
+      ...transaction,
+      ...values,
     });
     toast({
       title: "Transação Atualizada",
@@ -88,9 +97,9 @@ export function EditTransactionDialog({ transaction, categories, collaborators, 
     });
     onOpenChange(false);
   }
-  
-  const title = 'Editar Transação';
-  const description = 'Atualize os detalhes da sua transação.';
+
+  const title = "Editar Transação";
+  const description = "Atualize os detalhes da sua transação.";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -109,7 +118,10 @@ export function EditTransactionDialog({ transaction, categories, collaborators, 
                   <FormItem>
                     <FormLabel>Descrição</FormLabel>
                     <FormControl>
-                      <Input placeholder="ex: Custo mensal do servidor" {...field} />
+                      <Input
+                        placeholder="ex: Custo mensal do servidor"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -122,13 +134,18 @@ export function EditTransactionDialog({ transaction, categories, collaborators, 
                   <FormItem>
                     <FormLabel>Valor (R$)</FormLabel>
                     <FormControl>
-                      <Input type="number" step="0.01" placeholder="0,00" {...field} />
+                      <Input
+                        type="number"
+                        step="0.01"
+                        placeholder="0,00"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-               <FormField
+              <FormField
                 control={form.control}
                 name="collaboratorId"
                 render={({ field }) => (
@@ -141,8 +158,10 @@ export function EditTransactionDialog({ transaction, categories, collaborators, 
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {collaborators.map(c => (
-                          <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                        {collaborators.map((c) => (
+                          <SelectItem key={c.id} value={c.id}>
+                            {c.name}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -163,8 +182,10 @@ export function EditTransactionDialog({ transaction, categories, collaborators, 
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {categories.map(c => (
-                          <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                        {categories.map((c) => (
+                          <SelectItem key={c.id} value={c.id}>
+                            {c.name}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -172,10 +193,12 @@ export function EditTransactionDialog({ transaction, categories, collaborators, 
                   </FormItem>
                 )}
               />
-              
+
               <DialogFooter>
                 <Button type="submit" disabled={form.formState.isSubmitting}>
-                  {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {form.formState.isSubmitting && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
                   Salvar Alterações
                 </Button>
               </DialogFooter>

@@ -1,25 +1,58 @@
-
 "use client";
 
-import { useState, useRef } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Plus, Loader2, User, Edit, Trash2, UploadCloud, X } from 'lucide-react';
-import { Button, buttonVariants } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Table, TableBody, TableCell, TableHeader, TableRow, TableHead } from '@/components/ui/table';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button, buttonVariants } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
-import type { Collaborator } from '@/lib/types';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import { EditCollaboratorDialog } from './edit-collaborator-dialog';
-import { DeleteCollaboratorDialog } from './delete-collaborator-dialog';
-import { Label } from '../ui/label';
-import { cn } from '@/lib/utils';
-import useMutationBenneiro from '@/hooks/useMutationBenneiro';
+import useMutationBenneiro from "@/hooks/useMutationBenneiro";
+import type { Collaborator } from "@/lib/types";
+import { cn } from "@/lib/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Edit,
+  Loader2,
+  Plus,
+  Trash2,
+  UploadCloud,
+  X,
+} from "lucide-react";
+import { useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Label } from "../ui/label";
+import { DeleteCollaboratorDialog } from "./delete-collaborator-dialog";
+import { EditCollaboratorDialog } from "./edit-collaborator-dialog";
 
 interface CollaboratorsClientProps {
   initialCollaborators: Collaborator[];
@@ -38,8 +71,12 @@ const formSchema = z.object({
   avatarUrl: z.string().optional(),
 });
 
-export function CollaboratorsClient({ initialCollaborators, availableRoles }: CollaboratorsClientProps) {
-  const [collaborators, setCollaborators] = useState<Collaborator[]>(initialCollaborators);
+export function CollaboratorsClient(
+  { initialCollaborators, availableRoles }: CollaboratorsClientProps,
+) {
+  const [collaborators, setCollaborators] = useState<Collaborator[]>(
+    initialCollaborators,
+  );
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedCollaborator, setSelectedCollaborator] = useState<Collaborator | null>(null);
@@ -52,7 +89,7 @@ export function CollaboratorsClient({ initialCollaborators, availableRoles }: Co
   const totalPages = Math.ceil(collaborators.length / ITEMS_PER_PAGE);
   const paginatedCollaborators = collaborators.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
+    currentPage * ITEMS_PER_PAGE,
   );
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -63,22 +100,38 @@ export function CollaboratorsClient({ initialCollaborators, availableRoles }: Co
       avatarUrl: "",
     },
   });
-  
+
   function onSubmit(values: z.infer<typeof formSchema>) {
+    // Gera um novo ID baseado nos IDs atuais
+    const maxId = collaborators.length > 0
+      ? Math.max(...collaborators.map(c => Number(c.id)))
+      : 0;
+    const newId = maxId + 1;
+
+    const newCollaborator: Collaborator = {
+      id: newId.toString(),
+      name: values.name,
+      role: values.role,
+      avatarUrl: preview || undefined,
+    };
+
+    setCollaborators(prev => [newCollaborator, ...prev]);
+
     postBenneiro.mutate({
       nome: values.name,
       cargo: values.role,
-      foto_perfil: preview || undefined
+      foto_perfil: preview || undefined,
     });
 
     toast({
       title: "Colaborador Adicionado",
       description: `"${values.name}" foi adicionado com sucesso.`,
     });
+
     form.reset();
     setPreview(null);
     if (fileInputRef.current) {
-        fileInputRef.current.value = "";
+      fileInputRef.current.value = "";
     }
   }
 
@@ -121,25 +174,28 @@ export function CollaboratorsClient({ initialCollaborators, availableRoles }: Co
   const handleRemoveImage = () => {
     setPreview(null);
     if (fileInputRef.current) {
-        fileInputRef.current.value = "";
+      fileInputRef.current.value = "";
     }
-  }
+  };
 
   const handlePreviousPage = () => {
     setCurrentPage(prev => Math.max(prev - 1, 1));
-  }
+  };
 
   const handleNextPage = () => {
     setCurrentPage(prev => Math.min(prev + 1, totalPages));
-  }
+  };
 
   return (
     <>
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Gerenciar Colaboradores</h1>
-          <p className="text-muted-foreground">Adicione novos colaboradores ou visualize a equipe existente.</p>
+          <p className="text-muted-foreground">
+            Adicione novos colaboradores ou visualize a equipe existente.
+          </p>
         </div>
+
         <div className="grid gap-6 md:grid-cols-5">
           <div className="md:col-span-2">
             <Card>
@@ -151,32 +207,51 @@ export function CollaboratorsClient({ initialCollaborators, availableRoles }: Co
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                     <FormItem>
-                        <FormLabel>Foto do Colaborador</FormLabel>
-                        <FormControl>
-                            <div className="flex items-center gap-4">
-                                <Avatar className="h-20 w-20">
-                                    <AvatarImage src={preview || undefined} alt="Avatar do novo colaborador" />
-                                    <AvatarFallback>
-                                        <UploadCloud className="h-8 w-8 text-muted-foreground" />
-                                    </AvatarFallback>
-                                </Avatar>
-                                <div className="grid w-full max-w-sm items-center gap-1.5">
-                                    <Label htmlFor="picture-new" className={cn("cursor-pointer", buttonVariants({ variant: "outline" }))}>
-                                        <UploadCloud className="mr-2 h-4 w-4" />
-                                        Carregar Imagem
-                                    </Label>
-                                    <Input id="picture-new" type="file" className="hidden" onChange={handleFileChange} accept="image/*" ref={fileInputRef} />
-                                    {preview && (
-                                        <Button variant="ghost" size="sm" onClick={handleRemoveImage} className="w-fit">
-                                            <X className="mr-2 h-4 w-4" />
-                                            Remover
-                                        </Button>
-                                    )}
-                                </div>
-                            </div>
-                        </FormControl>
-                        <FormMessage />
+                      <FormLabel>Foto do Colaborador</FormLabel>
+                      <FormControl>
+                        <div className="flex items-center gap-4">
+                          <Avatar className="h-20 w-20">
+                            <AvatarImage src={preview || undefined} alt="Avatar do novo colaborador" />
+                            <AvatarFallback>
+                              <UploadCloud className="h-8 w-8 text-muted-foreground" />
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="grid w-full max-w-sm items-center gap-1.5">
+                            <Label
+                              htmlFor="picture-new"
+                              className={cn(
+                                "cursor-pointer",
+                                buttonVariants({ variant: "outline" })
+                              )}
+                            >
+                              <UploadCloud className="mr-2 h-4 w-4" />
+                              Carregar Imagem
+                            </Label>
+                            <Input
+                              id="picture-new"
+                              type="file"
+                              className="hidden"
+                              onChange={handleFileChange}
+                              accept="image/*"
+                              ref={fileInputRef}
+                            />
+                            {preview && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={handleRemoveImage}
+                                className="w-fit"
+                              >
+                                <X className="mr-2 h-4 w-4" />
+                                Remover
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
                     </FormItem>
+
                     <FormField
                       control={form.control}
                       name="name"
@@ -190,6 +265,7 @@ export function CollaboratorsClient({ initialCollaborators, availableRoles }: Co
                         </FormItem>
                       )}
                     />
+
                     <FormField
                       control={form.control}
                       name="role"
@@ -212,12 +288,14 @@ export function CollaboratorsClient({ initialCollaborators, availableRoles }: Co
                         </FormItem>
                       )}
                     />
-                    <Button type="submit" disabled={form.formState.isSubmitting || postBenneiro.isPending}>
-                      {form.formState.isSubmitting || postBenneiro.isPending ? (
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      ) : (
-                        <Plus className="mr-2 h-4 w-4" />
-                      )}
+
+                    <Button
+                      type="submit"
+                      disabled={form.formState.isSubmitting || postBenneiro.isPending}
+                    >
+                      {form.formState.isSubmitting || postBenneiro.isPending
+                        ? <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        : <Plus className="mr-2 h-4 w-4" />}
                       Adicionar Colaborador
                     </Button>
                   </form>
@@ -247,7 +325,7 @@ export function CollaboratorsClient({ initialCollaborators, availableRoles }: Co
                         <TableCell className="font-medium">
                           <div className="flex items-center gap-3">
                             <Avatar className="h-9 w-9">
-                              <AvatarImage src={collaborator.avatarUrl} alt={collaborator.name} data-ai-hint="person face" />
+                              <AvatarImage src={collaborator.avatarUrl} alt={collaborator.name} />
                               <AvatarFallback>{collaborator.name.charAt(0)}</AvatarFallback>
                             </Avatar>
                             {collaborator.name}
@@ -259,7 +337,7 @@ export function CollaboratorsClient({ initialCollaborators, availableRoles }: Co
                             <Edit className="h-4 w-4" />
                             <span className="sr-only">Editar</span>
                           </Button>
-                           <Button variant="ghost" size="icon" onClick={() => openDeleteDialog(collaborator)}>
+                          <Button variant="ghost" size="icon" onClick={() => openDeleteDialog(collaborator)}>
                             <Trash2 className="h-4 w-4 text-destructive" />
                             <span className="sr-only">Excluir</span>
                           </Button>
@@ -271,35 +349,26 @@ export function CollaboratorsClient({ initialCollaborators, availableRoles }: Co
               </CardContent>
               {totalPages > 1 && (
                 <CardFooter>
-                    <div className="flex items-center justify-between w-full">
-                        <span className="text-sm text-muted-foreground">
-                            Página {currentPage} de {totalPages}
-                        </span>
-                        <div className="flex items-center gap-2">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={handlePreviousPage}
-                                disabled={currentPage === 1}
-                            >
-                                Anterior
-                            </Button>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={handleNextPage}
-                                disabled={currentPage === totalPages}
-                            >
-                                Próximo
-                            </Button>
-                        </div>
+                  <div className="flex items-center justify-between w-full">
+                    <span className="text-sm text-muted-foreground">
+                      Página {currentPage} de {totalPages}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <Button variant="outline" size="sm" onClick={handlePreviousPage} disabled={currentPage === 1}>
+                        Anterior
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={handleNextPage} disabled={currentPage === totalPages}>
+                        Próximo
+                      </Button>
                     </div>
+                  </div>
                 </CardFooter>
               )}
             </Card>
           </div>
         </div>
       </div>
+
       <EditCollaboratorDialog
         collaborator={selectedCollaborator}
         onEditCollaborator={handleEditCollaborator}

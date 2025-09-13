@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -21,14 +20,14 @@ interface TeamCardProps {
 }
 
 export function TeamCard({ collaborators, transactions }: TeamCardProps) {
-
   const getReportCount = (collaboratorId: string) => {
-    return transactions.filter(t => t.collaboratorId === collaboratorId).length;
-  }
+    return transactions.filter((t) => t.collaboratorId === collaboratorId)
+      .length;
+  };
 
   const topCollaborators = useMemo(() => {
     return collaborators
-      .map(c => ({
+      .map((c) => ({
         ...c,
         reportCount: getReportCount(c.id),
       }))
@@ -54,17 +53,26 @@ export function TeamCard({ collaborators, transactions }: TeamCardProps) {
       </CardHeader>
       <CardContent className="grid gap-6">
         {topCollaborators.map((collaborator) => (
-          <div key={collaborator.id} className="flex items-center justify-between gap-4">
+          <div
+            key={collaborator.id}
+            className="flex items-center justify-between gap-4"
+          >
             <div className="flex items-center gap-4">
               <Avatar className="hidden h-9 w-9 sm:flex">
-                <AvatarImage src={collaborator.avatarUrl} alt={collaborator.name} data-ai-hint="person face" />
+                <AvatarImage
+                  src={collaborator.avatarUrl}
+                  alt={collaborator.name}
+                  data-ai-hint="person face"
+                />
                 <AvatarFallback>{collaborator.name.charAt(0)}</AvatarFallback>
               </Avatar>
               <div className="grid gap-1">
                 <p className="text-sm font-medium leading-none">
                   {collaborator.name}
                 </p>
-                <p className="text-sm text-muted-foreground">{collaborator.role}</p>
+                <p className="text-sm text-muted-foreground">
+                  {collaborator.role}
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">

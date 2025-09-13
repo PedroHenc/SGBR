@@ -1,12 +1,11 @@
-
 "use client";
 
-import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Loader2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -14,7 +13,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -22,10 +21,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import type { Category } from '@/lib/types';
+import type { Category } from "@/lib/types";
 
 interface EditCategoryDialogProps {
   category: Category | null;
@@ -43,7 +42,9 @@ const formSchema = z.object({
   }),
 });
 
-export function EditCategoryDialog({ category, onEditCategory, open, onOpenChange }: EditCategoryDialogProps) {
+export function EditCategoryDialog(
+  { category, onEditCategory, open, onOpenChange }: EditCategoryDialogProps,
+) {
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -73,8 +74,8 @@ export function EditCategoryDialog({ category, onEditCategory, open, onOpenChang
     onOpenChange(false);
   }
 
-  const title = 'Editar Categoria';
-  const description = 'Atualize os detalhes da categoria.';
+  const title = "Editar Categoria";
+  const description = "Atualize os detalhes da categoria.";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -107,7 +108,11 @@ export function EditCategoryDialog({ category, onEditCategory, open, onOpenChang
                     <FormLabel>Cor da Categoria</FormLabel>
                     <FormControl>
                       <div className="flex items-center gap-2">
-                        <Input type="color" className="w-12 h-10 p-1" {...field} />
+                        <Input
+                          type="color"
+                          className="w-12 h-10 p-1"
+                          {...field}
+                        />
                         <Input placeholder="#RRGGBB" {...field} />
                       </div>
                     </FormControl>
@@ -118,7 +123,9 @@ export function EditCategoryDialog({ category, onEditCategory, open, onOpenChang
 
               <DialogFooter>
                 <Button type="submit" disabled={form.formState.isSubmitting}>
-                  {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {form.formState.isSubmitting && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
                   Salvar Alterações
                 </Button>
               </DialogFooter>
