@@ -75,27 +75,37 @@ export default async function DashboardPage() {
   const transactions = mockTransactions;
   const categories = mockCategories;
 
-  const benneiroData = await getBenneiro();
+  let collaborators: Collaborator[] = [];
 
-  const collaborators: Collaborator[] = benneiroData?.data
-    .map((b: benneiro) => ({
-      id: String(b.id),
-      name: b.nome,
-      role: b.cargo,
-      avatarUrl: b.foto_perfil,
-    }))
-    .sort((a, b) => {
-      const roleAIndex = availableRoles.indexOf(a.role);
-      const roleBIndex = availableRoles.indexOf(b.role);
+  try {
+    const benneiroData = await getBenneiro();
 
-      const effectiveRoleAIndex = roleAIndex === -1 ? Infinity : roleAIndex;
-      const effectiveRoleBIndex = roleBIndex === -1 ? Infinity : roleBIndex;
+    if (benneiroData?.data) {
+      collaborators = benneiroData.data
+        .map((b: benneiro) => ({
+          id: String(b.id),
+          name: b.nome,
+          role: b.cargo,
+          avatarUrl: b.foto_perfil,
+        }))
+        .sort((a, b) => {
+          const roleAIndex = availableRoles.indexOf(a.role);
+          const roleBIndex = availableRoles.indexOf(b.role);
 
-      if (effectiveRoleAIndex < effectiveRoleBIndex) return -1;
-      if (effectiveRoleAIndex > effectiveRoleBIndex) return 1;
+          const effectiveRoleAIndex = roleAIndex === -1 ? Infinity : roleAIndex;
+          const effectiveRoleBIndex = roleBIndex === -1 ? Infinity : roleBIndex;
 
-      return Number(a.id) - Number(b.id);
-    }) || [];
+          if (effectiveRoleAIndex < effectiveRoleBIndex) return -1;
+          if (effectiveRoleAIndex > effectiveRoleBIndex) return 1;
+
+          return Number(a.id) - Number(b.id);
+        });
+    }
+  } catch (error) {
+    console.warn("Could not fetch collaborators. Is the API running?", error);
+    // Fallback to an empty array if the API call fails
+    collaborators = [];
+  }
 
   return (
     <AppLayout>

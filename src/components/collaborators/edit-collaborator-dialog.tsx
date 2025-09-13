@@ -56,8 +56,13 @@ const formSchema = z.object({
 });
 
 export function EditCollaboratorDialog(
-  { collaborator, onEditCollaborator, open, onOpenChange, availableRoles }:
-    EditCollaboratorDialogProps,
+  {
+    collaborator,
+    onEditCollaborator,
+    open,
+    onOpenChange,
+    availableRoles,
+  }: EditCollaboratorDialogProps,
 ) {
   const { toast } = useToast();
   const [preview, setPreview] = useState<string | null>(null);
@@ -82,18 +87,35 @@ export function EditCollaboratorDialog(
   function onSubmit(values: z.infer<typeof formSchema>) {
     if (!collaborator) return;
 
-    putBenneiro.mutate({
-      id: Number(collaborator.id),
-      nome: values.name,
-      cargo: values.role,
-      foto_perfil: preview || undefined,
-    });
-
-    toast({
-      title: "Colaborador Atualizado",
-      description: `"${values.name}" foi atualizado com sucesso.`,
-    });
-    onOpenChange(false);
+    putBenneiro.mutate(
+      {
+        id: Number(collaborator.id),
+        nome: values.name,
+        cargo: values.role,
+        foto_perfil: preview || undefined,
+      },
+      {
+        onSuccess: () => {
+          onEditCollaborator({
+            ...collaborator,
+            ...values,
+            avatarUrl: preview || undefined,
+          });
+          toast({
+            title: "Colaborador Atualizado",
+            description: `"${values.name}" foi atualizado com sucesso.`,
+          });
+          onOpenChange(false);
+        },
+        onError: () => {
+          toast({
+            title: "Erro ao Atualizar",
+            description: "Não foi possível atualizar o colaborador.",
+            variant: "destructive",
+          });
+        },
+      },
+    );
   }
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -201,7 +223,7 @@ export function EditCollaboratorDialog(
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {availableRoles.map((role) => (
+                        {availableRoles.map(role => (
                           <SelectItem key={role} value={role}>
                             {role}
                           </SelectItem>
@@ -215,13 +237,11 @@ export function EditCollaboratorDialog(
               <DialogFooter>
                 <Button
                   type="submit"
-                  disabled={form.formState.isSubmitting ||
-                    putBenneiro.isPending}
+                  disabled={form.formState.isSubmitting || putBenneiro.isPending}
                 >
-                  {form.formState.isSubmitting ||
-                    putBenneiro.isPending && (
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      )}
+                  {(form.formState.isSubmitting || putBenneiro.isPending) && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
                   Salvar Alterações
                 </Button>
               </DialogFooter>

@@ -79,11 +79,12 @@ export function CollaboratorsClient(
   );
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [selectedCollaborator, setSelectedCollaborator] = useState<Collaborator | null>(null);
+  const [selectedCollaborator, setSelectedCollaborator] =
+    useState<Collaborator | null>(null);
   const { toast } = useToast();
   const [preview, setPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { postBenneiro } = useMutationBenneiro();
+  const { postBenneiro, deleteBenneiro } = useMutationBenneiro();
 
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = Math.ceil(collaborators.length / ITEMS_PER_PAGE);
@@ -137,16 +138,29 @@ export function CollaboratorsClient(
 
   const handleEditCollaborator = (updatedCollaborator: Collaborator) => {
     setCollaborators(prev =>
-      prev.map(c => (c.id === updatedCollaborator.id ? updatedCollaborator : c))
+      prev.map(c => (c.id === updatedCollaborator.id ? updatedCollaborator : c)),
     );
   };
 
   const handleDeleteCollaborator = (collaboratorId: string) => {
-    const collaboratorName = collaborators.find(c => c.id === collaboratorId)?.name;
-    setCollaborators(prev => prev.filter(c => c.id !== collaboratorId));
-    toast({
-      title: "Colaborador Excluído",
-      description: `"${collaboratorName}" foi excluído com sucesso.`,
+    const collaborator = collaborators.find(c => c.id === collaboratorId);
+    if (!collaborator) return;
+
+    deleteBenneiro.mutate(Number(collaboratorId), {
+      onSuccess: () => {
+        setCollaborators(prev => prev.filter(c => c.id !== collaboratorId));
+        toast({
+          title: "Colaborador Excluído",
+          description: `"${collaborator.name}" foi excluído com sucesso.`,
+        });
+      },
+      onError: () => {
+        toast({
+          title: "Erro ao Excluir",
+          description: `Não foi possível excluir o colaborador "${collaborator.name}".`,
+          variant: "destructive",
+        });
+      },
     });
   };
 
@@ -190,7 +204,9 @@ export function CollaboratorsClient(
     <>
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Gerenciar Colaboradores</h1>
+          <h1 className="text-2xl font-bold tracking-tight">
+            Gerenciar Colaboradores
+          </h1>
           <p className="text-muted-foreground">
             Adicione novos colaboradores ou visualize a equipe existente.
           </p>
@@ -201,17 +217,25 @@ export function CollaboratorsClient(
             <Card>
               <CardHeader>
                 <CardTitle>Adicionar Novo Colaborador</CardTitle>
-                <CardDescription>Insira os dados do novo membro da equipe.</CardDescription>
+                <CardDescription>
+                  Insira os dados do novo membro da equipe.
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="space-y-4"
+                  >
                     <FormItem>
                       <FormLabel>Foto do Colaborador</FormLabel>
                       <FormControl>
                         <div className="flex items-center gap-4">
                           <Avatar className="h-20 w-20">
-                            <AvatarImage src={preview || undefined} alt="Avatar do novo colaborador" />
+                            <AvatarImage
+                              src={preview || undefined}
+                              alt="Avatar do novo colaborador"
+                            />
                             <AvatarFallback>
                               <UploadCloud className="h-8 w-8 text-muted-foreground" />
                             </AvatarFallback>
@@ -221,7 +245,7 @@ export function CollaboratorsClient(
                               htmlFor="picture-new"
                               className={cn(
                                 "cursor-pointer",
-                                buttonVariants({ variant: "outline" })
+                                buttonVariants({ variant: "outline" }),
                               )}
                             >
                               <UploadCloud className="mr-2 h-4 w-4" />
@@ -272,7 +296,10 @@ export function CollaboratorsClient(
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Cargo do Colaborador</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
+                          <Select
+                            onValueChange={field.onChange}
+                            value={field.value}
+                          >
                             <FormControl>
                               <SelectTrigger>
                                 <SelectValue placeholder="Selecione um cargo" />
@@ -280,7 +307,9 @@ export function CollaboratorsClient(
                             </FormControl>
                             <SelectContent>
                               {availableRoles.map(role => (
-                                <SelectItem key={role} value={role}>{role}</SelectItem>
+                                <SelectItem key={role} value={role}>
+                                  {role}
+                                </SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
@@ -291,7 +320,9 @@ export function CollaboratorsClient(
 
                     <Button
                       type="submit"
-                      disabled={form.formState.isSubmitting || postBenneiro.isPending}
+                      disabled={
+                        form.formState.isSubmitting || postBenneiro.isPending
+                      }
                     >
                       {form.formState.isSubmitting || postBenneiro.isPending
                         ? <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -308,7 +339,9 @@ export function CollaboratorsClient(
             <Card>
               <CardHeader>
                 <CardTitle>Equipe</CardTitle>
-                <CardDescription>Aqui estão todos os colaboradores da sua empresa.</CardDescription>
+                <CardDescription>
+                  Aqui estão todos os colaboradores da sua empresa.
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <Table>
@@ -325,19 +358,32 @@ export function CollaboratorsClient(
                         <TableCell className="font-medium">
                           <div className="flex items-center gap-3">
                             <Avatar className="h-9 w-9">
-                              <AvatarImage src={collaborator.avatarUrl} alt={collaborator.name} />
-                              <AvatarFallback>{collaborator.name.charAt(0)}</AvatarFallback>
+                              <AvatarImage
+                                src={collaborator.avatarUrl}
+                                alt={collaborator.name}
+                              />
+                              <AvatarFallback>
+                                {collaborator.name.charAt(0)}
+                              </AvatarFallback>
                             </Avatar>
                             {collaborator.name}
                           </div>
                         </TableCell>
                         <TableCell>{collaborator.role}</TableCell>
                         <TableCell className="text-right">
-                          <Button variant="ghost" size="icon" onClick={() => openEditDialog(collaborator)}>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => openEditDialog(collaborator)}
+                          >
                             <Edit className="h-4 w-4" />
                             <span className="sr-only">Editar</span>
                           </Button>
-                          <Button variant="ghost" size="icon" onClick={() => openDeleteDialog(collaborator)}>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => openDeleteDialog(collaborator)}
+                          >
                             <Trash2 className="h-4 w-4 text-destructive" />
                             <span className="sr-only">Excluir</span>
                           </Button>
@@ -354,10 +400,20 @@ export function CollaboratorsClient(
                       Página {currentPage} de {totalPages}
                     </span>
                     <div className="flex items-center gap-2">
-                      <Button variant="outline" size="sm" onClick={handlePreviousPage} disabled={currentPage === 1}>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handlePreviousPage}
+                        disabled={currentPage === 1}
+                      >
                         Anterior
                       </Button>
-                      <Button variant="outline" size="sm" onClick={handleNextPage} disabled={currentPage === totalPages}>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleNextPage}
+                        disabled={currentPage === totalPages}
+                      >
                         Próximo
                       </Button>
                     </div>
