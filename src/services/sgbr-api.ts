@@ -2,8 +2,8 @@ import axios from "axios";
 import { benneiro } from "./types";
 
 const api = axios.create({
-  baseURL: "http://localhost:8080",
-  // baseURL: "https://sgbr-api.up.railway.app/",
+  // baseURL: "http://localhost:8080",
+  baseURL: "https://sgbr-api.up.railway.app/",
 });
 
 export function getBenneiros() {
@@ -18,8 +18,8 @@ export function postBenneiro(data: Omit<benneiro, "id">) {
   return api.post<benneiro>("/benneiros", data);
 }
 
-export function putBenneiro(id: number, data: Omit<benneiro, "id">) {
-  return api.put<benneiro>(`/benneiros/${id}`, data);
+export function putBenneiro(id: number) {
+  return api.put<benneiro>(`/benneiros/${id}`);
 }
 
 export function deleteBenneiro(id: number) {
