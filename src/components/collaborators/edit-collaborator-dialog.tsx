@@ -1,12 +1,11 @@
-
 "use client";
 
-import { useEffect, useState, useRef } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Loader2, UploadCloud, X } from 'lucide-react';
-import { Button, buttonVariants } from '@/components/ui/button';
+import { useEffect, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Loader2, UploadCloud, X } from "lucide-react";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -14,7 +13,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -22,15 +21,21 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import type { Collaborator } from '@/lib/types';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import { Label } from '../ui/label';
-import { cn } from '@/lib/utils';
-import useMutationBenneiro from '@/hooks/useMutationBenneiro';
+import type { Collaborator } from "@/lib/types";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Label } from "../ui/label";
+import { cn } from "@/lib/utils";
+import useMutationBenneiro from "@/hooks/useMutationBenneiro";
 
 interface EditCollaboratorDialogProps {
   collaborator: Collaborator | null;
@@ -50,7 +55,10 @@ const formSchema = z.object({
   avatarUrl: z.string().optional(),
 });
 
-export function EditCollaboratorDialog({ collaborator, onEditCollaborator, open, onOpenChange, availableRoles }: EditCollaboratorDialogProps) {
+export function EditCollaboratorDialog(
+  { collaborator, onEditCollaborator, open, onOpenChange, availableRoles }:
+    EditCollaboratorDialogProps,
+) {
   const { toast } = useToast();
   const [preview, setPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -73,12 +81,12 @@ export function EditCollaboratorDialog({ collaborator, onEditCollaborator, open,
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     if (!collaborator) return;
-    
+
     putBenneiro.mutate({
       id: Number(collaborator.id),
       nome: values.name,
       cargo: values.role,
-      foto_perfil: preview || undefined
+      foto_perfil: preview || undefined,
     });
 
     toast({
@@ -102,12 +110,12 @@ export function EditCollaboratorDialog({ collaborator, onEditCollaborator, open,
   const handleRemoveImage = () => {
     setPreview(null);
     if (fileInputRef.current) {
-        fileInputRef.current.value = "";
+      fileInputRef.current.value = "";
     }
-  }
+  };
 
-  const title = 'Editar Colaborador';
-  const description = 'Atualize os detalhes do colaborador.';
+  const title = "Editar Colaborador";
+  const description = "Atualize os detalhes do colaborador.";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -122,27 +130,48 @@ export function EditCollaboratorDialog({ collaborator, onEditCollaborator, open,
               <FormItem>
                 <FormLabel>Foto do Colaborador</FormLabel>
                 <FormControl>
-                    <div className="flex items-center gap-4">
-                        <Avatar className="h-20 w-20">
-                            <AvatarImage src={preview || undefined} alt={collaborator.name} />
-                            <AvatarFallback>
-                                <UploadCloud className="h-8 w-8 text-muted-foreground" />
-                            </AvatarFallback>
-                        </Avatar>
-                        <div className="grid w-full max-w-sm items-center gap-1.5">
-                            <Label htmlFor="picture" className={cn("cursor-pointer", buttonVariants({ variant: "outline" }))}>
-                                <UploadCloud className="mr-2 h-4 w-4" />
-                                Carregar Imagem
-                            </Label>
-                            <Input id="picture" type="file" className="hidden" onChange={handleFileChange} accept="image/*" ref={fileInputRef} />
-                            {preview && (
-                                <Button variant="ghost" size="sm" onClick={handleRemoveImage} className="w-fit">
-                                    <X className="mr-2 h-4 w-4" />
-                                    Remover
-                                </Button>
-                            )}
-                        </div>
+                  <div className="flex items-center gap-4">
+                    <Avatar className="h-20 w-20">
+                      <AvatarImage
+                        src={preview || undefined}
+                        alt={collaborator.name}
+                      />
+                      <AvatarFallback>
+                        <UploadCloud className="h-8 w-8 text-muted-foreground" />
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="grid w-full max-w-sm items-center gap-1.5">
+                      <Label
+                        htmlFor="picture"
+                        className={cn(
+                          "cursor-pointer",
+                          buttonVariants({ variant: "outline" }),
+                        )}
+                      >
+                        <UploadCloud className="mr-2 h-4 w-4" />
+                        Carregar Imagem
+                      </Label>
+                      <Input
+                        id="picture"
+                        type="file"
+                        className="hidden"
+                        onChange={handleFileChange}
+                        accept="image/*"
+                        ref={fileInputRef}
+                      />
+                      {preview && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={handleRemoveImage}
+                          className="w-fit"
+                        >
+                          <X className="mr-2 h-4 w-4" />
+                          Remover
+                        </Button>
+                      )}
                     </div>
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -165,25 +194,34 @@ export function EditCollaboratorDialog({ collaborator, onEditCollaborator, open,
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Cargo do Colaborador</FormLabel>
-                     <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Selecione um cargo" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {availableRoles.map(role => (
-                            <SelectItem key={role} value={role}>{role}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione um cargo" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {availableRoles.map((role) => (
+                          <SelectItem key={role} value={role}>
+                            {role}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
               />
               <DialogFooter>
-                <Button type="submit" disabled={form.formState.isSubmitting || putBenneiro.isPending}>
-                  {form.formState.isSubmitting || putBenneiro.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                <Button
+                  type="submit"
+                  disabled={form.formState.isSubmitting ||
+                    putBenneiro.isPending}
+                >
+                  {form.formState.isSubmitting ||
+                    putBenneiro.isPending && (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      )}
                   Salvar Alterações
                 </Button>
               </DialogFooter>

@@ -1,4 +1,3 @@
-
 "use client";
 
 import {
@@ -20,7 +19,9 @@ interface ResetExpensesDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function ResetExpensesDialog({ onResetExpenses, open, onOpenChange }: ResetExpensesDialogProps) {
+export function ResetExpensesDialog(
+  { onResetExpenses, open, onOpenChange }: ResetExpensesDialogProps,
+) {
   const handleReset = () => {
     onResetExpenses();
     onOpenChange(false);
@@ -32,7 +33,8 @@ export function ResetExpensesDialog({ onResetExpenses, open, onOpenChange }: Res
         <AlertDialogHeader>
           <AlertDialogTitle>Resetar Despesas</AlertDialogTitle>
           <AlertDialogDescription>
-            Tem certeza que deseja resetar todas as despesas? Esta ação removerá todas as transações de despesa e não pode ser desfeita.
+            Tem certeza que deseja resetar todas as despesas? Esta ação removerá
+            todas as transações de despesa e não pode ser desfeita.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

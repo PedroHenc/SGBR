@@ -1,4 +1,3 @@
-
 "use client";
 
 import {
@@ -12,7 +11,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { buttonVariants } from "@/components/ui/button";
-import type { Category } from '@/lib/types';
+import type { Category } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 interface DeleteCategoryDialogProps {
@@ -22,7 +21,9 @@ interface DeleteCategoryDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function DeleteCategoryDialog({ category, onDeleteCategory, open, onOpenChange }: DeleteCategoryDialogProps) {
+export function DeleteCategoryDialog(
+  { category, onDeleteCategory, open, onOpenChange }: DeleteCategoryDialogProps,
+) {
   if (!category) {
     return null;
   }
@@ -39,7 +40,8 @@ export function DeleteCategoryDialog({ category, onDeleteCategory, open, onOpenC
           <AlertDialogTitle>Excluir Categoria</AlertDialogTitle>
           <AlertDialogDescription>
             Tem certeza que deseja excluir a categoria{" "}
-            <span className="font-bold">{category.name}</span>? Esta ação não pode ser desfeita.
+            <span className="font-bold">{category.name}</span>? Esta ação não
+            pode ser desfeita.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
