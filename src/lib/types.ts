@@ -8,6 +8,7 @@ export interface Transaction {
   date: Date;
   categoryId: string;
   collaboratorId: string;
+  createdBy?: string;
 }
 
 export interface Category {

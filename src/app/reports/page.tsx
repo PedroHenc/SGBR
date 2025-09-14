@@ -76,6 +76,7 @@ export default async function ReportsPage() {
           categories[0]?.id ||
           "1",
         collaboratorId: String(r.beneiro_id),
+        createdBy: r.created_by,
       }));
     }
   } catch (error) {

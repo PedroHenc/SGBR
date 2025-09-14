@@ -115,14 +115,13 @@ export function ReportsClient(
     ].join(",");
     const csvBody = transactions.map((t) => {
       const category = getCategory(t.categoryId);
-      const collaborator = getCollaborator(t.collaboratorId);
       return [
         `"${t.description.replace(/"/g, '""')}"`,
         t.type === "revenue" ? "Receita" : "Despesa",
         t.amount,
         format(t.date, "yyyy-MM-dd HH:mm"),
         `"${category?.name.replace(/"/g, '""') || "Sem categoria"}"`,
-        `"${collaborator?.name.replace(/"/g, '""') || "N/A"}"`,
+        `"${t.createdBy || getCollaborator(t.collaboratorId)?.name || "N/A"}"`,
       ].join(",");
     }).join("\n");
 
@@ -204,6 +203,8 @@ export function ReportsClient(
                 {paginatedTransactions.map((t) => {
                   const category = getCategory(t.categoryId);
                   const collaborator = getCollaborator(t.collaboratorId);
+                  const creatorName =
+                    t.createdBy || collaborator?.name || "N/A";
                   return (
                     <TableRow key={t.id}>
                       <TableCell>
@@ -214,14 +215,14 @@ export function ReportsClient(
                           <Avatar className="h-8 w-8">
                             <AvatarImage
                               src={collaborator?.avatarUrl}
-                              alt={collaborator?.name}
+                              alt={creatorName}
                             />
                             <AvatarFallback>
-                              {collaborator?.name.charAt(0)}
+                              {creatorName.charAt(0)}
                             </AvatarFallback>
                           </Avatar>
                           <span className="hidden sm:inline-block">
-                            {collaborator?.name}
+                            {creatorName}
                           </span>
                         </div>
                       </TableCell>

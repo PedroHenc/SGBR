@@ -83,7 +83,6 @@ export default async function DashboardPage() {
     }
   } catch (error) {
     console.warn("Could not fetch data. Is the API running?", error);
-    // Fallback to empty arrays if the API call fails
     collaborators = [];
     transactions = [];
     categories = [];
