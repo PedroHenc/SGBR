@@ -1,57 +1,8 @@
 import { AppLayout } from "@/components/layout/app-layout";
 import { DashboardClient } from "@/components/dashboard/dashboard-client";
 import type { Category, Collaborator, Transaction } from "@/lib/types";
-import { getBenneiro } from "@/services/sgbr-api";
-import type { benneiro } from "@/services/types";
-
-// In a real app, this data would come from a database
-const mockTransactions: Omit<Transaction, "date"> & { date: string }[] = [
-  {
-    id: "1",
-    type: "revenue",
-    description: "Projeto de web design para Acme Corp",
-    amount: 2500,
-    date: new Date("2024-07-01T00:00:00").toISOString(),
-    categoryId: "1",
-    collaboratorId: "1",
-  },
-  {
-    id: "2",
-    type: "expense",
-    description: "Assinatura mensal da Adobe Creative Cloud",
-    amount: 99,
-    date: new Date("2024-07-03T00:00:00").toISOString(),
-    categoryId: "3",
-    collaboratorId: "2",
-  },
-  {
-    id: "3",
-    type: "revenue",
-    description: "Serviços de consultoria para Tech Solutions",
-    amount: 1200,
-    date: new Date("2024-07-10T00:00:00").toISOString(),
-    categoryId: "2",
-    collaboratorId: "1",
-  },
-  {
-    id: "4",
-    type: "expense",
-    description: "Material de escritório da Staples",
-    amount: 150,
-    date: new Date("2024-07-12T00:00:00").toISOString(),
-    categoryId: "4",
-    collaboratorId: "3",
-  },
-  {
-    id: "5",
-    type: "expense",
-    description: "Hospedagem Vercel para o site da empresa",
-    amount: 75,
-    date: new Date("2024-07-15T00:00:00").toISOString(),
-    categoryId: "3",
-    collaboratorId: "4",
-  },
-];
+import { getBenneiro, getRelatorios } from "@/services/sgbr-api";
+import type { benneiro, Relatorios as RelatoriosType } from "@/services/types";
 
 const mockCategories: Category[] = [
   { id: "1", name: "Desenvolvimento Web", color: "#3b82f6" },
@@ -72,13 +23,15 @@ const availableRoles = [
 ];
 
 export default async function DashboardPage() {
-  const transactions = mockTransactions;
   const categories = mockCategories;
-
+  let transactions: (Omit<Transaction, "date"> & { date: string })[] = [];
   let collaborators: Collaborator[] = [];
 
   try {
-    const benneiroData = await getBenneiro();
+    const [benneiroData, relatoriosData] = await Promise.all([
+      getBenneiro(),
+      getRelatorios(),
+    ]);
 
     if (benneiroData?.data) {
       collaborators = benneiroData.data
@@ -91,20 +44,40 @@ export default async function DashboardPage() {
         .sort((a, b) => {
           const roleAIndex = availableRoles.indexOf(a.role);
           const roleBIndex = availableRoles.indexOf(b.role);
-
           const effectiveRoleAIndex = roleAIndex === -1 ? Infinity : roleAIndex;
           const effectiveRoleBIndex = roleBIndex === -1 ? Infinity : roleBIndex;
-
           if (effectiveRoleAIndex < effectiveRoleBIndex) return -1;
           if (effectiveRoleAIndex > effectiveRoleBIndex) return 1;
-
           return Number(a.id) - Number(b.id);
         });
     }
+
+    if (relatoriosData?.data) {
+      transactions = relatoriosData.data
+        .map((r: RelatoriosType) => ({
+          id: String(r.id),
+          type: (r.lucro ?? 0) >= 0 ? "revenue" : "expense",
+          description:
+            `Serviço para ${r.cliente} no veículo ${r.veiculo}` ||
+            "Relatório sem descrição",
+          amount: Math.abs(r.lucro ?? 0),
+          date: (r.created_at
+            ? new Date(r.created_at)
+            : new Date()
+          ).toISOString(),
+          categoryId:
+            categories.find((c) => c.name === r.categoria)?.id ||
+            categories[0]?.id ||
+            "1",
+          collaboratorId: String(r.beneiro_id),
+        }))
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    }
   } catch (error) {
-    console.warn("Could not fetch collaborators. Is the API running?", error);
-    // Fallback to an empty array if the API call fails
+    console.warn("Could not fetch data. Is the API running?", error);
+    // Fallback to empty arrays if the API call fails
     collaborators = [];
+    transactions = [];
   }
 
   return (
