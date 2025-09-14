@@ -48,6 +48,29 @@ const formSchema = z.object({
   }),
 });
 
+const colorPalette = [
+  "#1f77b4",
+  "#ff7f0e",
+  "#2ca02c",
+  "#d62728",
+  "#9467bd",
+  "#8c564b",
+  "#e377c2",
+  "#7f7f7f",
+  "#bcbd22",
+  "#17becf",
+];
+
+const getConsistentColor = (categoryName: string) => {
+  let hash = 0;
+  if (!categoryName) return colorPalette[0];
+  for (let i = 0; i < categoryName.length; i++) {
+    hash = categoryName.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash) % colorPalette.length;
+  return colorPalette[index];
+};
+
 export function CategoriesClient({ initialCategories }: CategoriesClientProps) {
   const [categories, setCategories] = useState<Category[]>(initialCategories);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -57,25 +80,22 @@ export function CategoriesClient({ initialCategories }: CategoriesClientProps) {
   );
   const { toast } = useToast();
 
-  const generateRandomColor = () => {
-    return `#${
-      Math.floor(Math.random() * 16777215).toString(16).padStart(6, "0")
-    }`;
-  };
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      color: generateRandomColor(),
+      color: getConsistentColor(""),
     },
   });
 
   useEffect(() => {
-    // Set an initial random color when the component mounts and the form is reset
-    if (!form.getValues("color")) {
-      form.setValue("color", generateRandomColor());
-    }
+    // Set color when name changes
+    const subscription = form.watch((value, { name }) => {
+      if (name === "name") {
+        form.setValue("color", getConsistentColor(value.name || ""));
+      }
+    });
+    return () => subscription.unsubscribe();
   }, [form]);
 
   function onSubmit(values: z.infer<typeof formSchema>) {
@@ -90,7 +110,7 @@ export function CategoriesClient({ initialCategories }: CategoriesClientProps) {
       description: `Categoria "${values.name}" adicionada com sucesso.`,
     });
     form.reset();
-    form.setValue("color", generateRandomColor());
+    form.setValue("color", getConsistentColor(""));
   }
 
   const handleEditCategory = (updatedCategory: Category) => {
@@ -116,6 +136,15 @@ export function CategoriesClient({ initialCategories }: CategoriesClientProps) {
   const openDeleteDialog = (category: Category) => {
     setSelectedCategory(category);
     setIsDeleteDialogOpen(true);
+  };
+
+  const refreshColor = () => {
+    const currentColor = form.getValues("color");
+    const currentIndex = colorPalette.indexOf(currentColor);
+    const nextIndex = (currentIndex + 1) % colorPalette.length;
+    form.setValue("color", colorPalette[nextIndex], {
+      shouldValidate: true,
+    });
   };
 
   return (
@@ -168,13 +197,10 @@ export function CategoriesClient({ initialCategories }: CategoriesClientProps) {
                               type="button"
                               variant="ghost"
                               size="sm"
-                              onClick={() =>
-                                form.setValue("color", generateRandomColor(), {
-                                  shouldValidate: true,
-                                })}
+                              onClick={refreshColor}
                             >
                               <RefreshCw className="mr-2 h-3 w-3" />
-                              Gerar Cor
+                              Mudar Cor
                             </Button>
                           </div>
                           <FormControl>

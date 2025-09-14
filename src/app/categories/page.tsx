@@ -3,8 +3,27 @@ import { CategoriesClient } from "@/components/categories/categories-client";
 import type { Category } from "@/lib/types";
 import { getRelatorios } from "@/services/sgbr-api";
 
-const generateRandomColor = () =>
-  `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, "0")}`;
+const colorPalette = [
+  "#1f77b4",
+  "#ff7f0e",
+  "#2ca02c",
+  "#d62728",
+  "#9467bd",
+  "#8c564b",
+  "#e377c2",
+  "#7f7f7f",
+  "#bcbd22",
+  "#17becf",
+];
+
+const getConsistentColor = (categoryName: string) => {
+  let hash = 0;
+  for (let i = 0; i < categoryName.length; i++) {
+    hash = categoryName.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash) % colorPalette.length;
+  return colorPalette[index];
+};
 
 export default async function CategoriesPage() {
   let categories: Category[] = [];
@@ -23,7 +42,7 @@ export default async function CategoriesPage() {
       categories = uniqueCategories.map((name, index) => ({
         id: String(index + 1),
         name,
-        color: generateRandomColor(),
+        color: getConsistentColor(name),
       }));
     }
   } catch (error) {
