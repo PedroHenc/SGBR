@@ -69,8 +69,9 @@ export default async function ReportsPage() {
           "Relatório sem descrição",
         amount: Math.abs(r.lucro ?? 0),
         date: (r.created_at
-          ? new Date(r.created_at)
-          : new Date()).toISOString(),
+          ? new Date(r.created_at.replace(" ", "T"))
+          : new Date()
+        ).toISOString(),
         categoryId:
           categories.find((c) => c.name === r.categoria)?.id ||
           categories[0]?.id ||

@@ -70,7 +70,7 @@ export default async function DashboardPage() {
             "Relatório sem descrição",
           amount: Math.abs(r.lucro ?? 0),
           date: (r.created_at
-            ? new Date(r.created_at)
+            ? new Date(r.created_at.replace(" ", "T"))
             : new Date()
           ).toISOString(),
           categoryId:
