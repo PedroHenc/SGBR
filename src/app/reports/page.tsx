@@ -4,14 +4,8 @@ import type { Category, Collaborator, Transaction } from "@/lib/types";
 import { getBenneiro, getRelatorios } from "@/services/sgbr-api";
 import type { benneiro, Relatorios as RelatoriosType } from "@/services/types";
 
-const mockCategories: Category[] = [
-  { id: "1", name: "Desenvolvimento Web", color: "#3b82f6" },
-  { id: "2", name: "Consultoria", color: "#16a34a" },
-  { id: "3", name: "Software", color: "#ea580c" },
-  { id: "4", name: "Material de Escritório", color: "#7c3aed" },
-  { id: "5", name: "Utilidades", color: "#db2777" },
-  { id: "6", name: "Marketing", color: "#f59e0b" },
-];
+const generateRandomColor = () =>
+  `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, "0")}`;
 
 const availableRoles = [
   "Presidente",
@@ -23,7 +17,7 @@ const availableRoles = [
 ];
 
 export default async function ReportsPage() {
-  const categories = mockCategories;
+  let categories: Category[] = [];
   let transactions: (Omit<Transaction, "date"> & { date: string })[] = [];
   let collaborators: Collaborator[] = [];
 
@@ -53,10 +47,22 @@ export default async function ReportsPage() {
     }
 
     if (relatoriosData?.data) {
+      const uniqueCategories = [
+        ...new Set(
+          relatoriosData.data
+            .map((r) => r.categoria)
+            .filter(Boolean) as string[],
+        ),
+      ];
+
+      categories = uniqueCategories.map((name, index) => ({
+        id: String(index + 1),
+        name,
+        color: generateRandomColor(),
+      }));
+
       transactions = relatoriosData.data.map((r: RelatoriosType) => ({
         id: String(r.id),
-        // A API não especifica se é receita ou despesa, assumindo despesa por padrão.
-        // O `lucro` pode ser usado para determinar isso no futuro.
         type: (r.lucro ?? 0) >= 0 ? "revenue" : "expense",
         description:
           `Serviço para ${r.cliente} no veículo ${r.veiculo}` ||
@@ -74,6 +80,9 @@ export default async function ReportsPage() {
     }
   } catch (error) {
     console.warn("Could not fetch data. Is the API running?", error);
+    categories = [];
+    transactions = [];
+    collaborators = [];
   }
 
   return (
