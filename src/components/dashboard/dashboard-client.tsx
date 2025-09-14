@@ -170,13 +170,14 @@ export function DashboardClient(
     const csvBody = recentTransactions.map((t) => {
       const category = getCategory(t.categoryId);
       const collaborator = getCollaborator(t.collaboratorId);
+      const creatorName = t.createdBy || collaborator?.name || "N/A";
       return [
         `"${t.description.replace(/"/g, '""')}"`,
         t.type === "revenue" ? "Receita" : "Despesa",
         t.amount,
         format(t.date, "yyyy-MM-dd HH:mm"),
         `"${category?.name.replace(/"/g, '""') || "Sem categoria"}"`,
-        `"${collaborator?.name.replace(/"/g, '""') || "N/A"}"`,
+        `"${creatorName.replace(/"/g, '""')}"`,
       ].join(",");
     }).join("\n");
 
@@ -288,6 +289,7 @@ export function DashboardClient(
                   {transactions.slice(0, 5).map((t) => {
                     const category = getCategory(t.categoryId);
                     const collaborator = getCollaborator(t.collaboratorId);
+                    const creatorName = t.createdBy || collaborator?.name || "N/A";
                     return (
                       <TableRow
                         key={t.id}
@@ -300,10 +302,10 @@ export function DashboardClient(
                             <Avatar className="h-8 w-8 hidden sm:flex">
                               <AvatarImage
                                 src={collaborator?.avatarUrl}
-                                alt={collaborator?.name}
+                                alt={creatorName}
                               />
                               <AvatarFallback>
-                                {collaborator?.name.charAt(0)}
+                                {creatorName.charAt(0)}
                               </AvatarFallback>
                             </Avatar>
                             <div>
@@ -312,7 +314,7 @@ export function DashboardClient(
                                 <div className="text-sm text-muted-foreground">
                                   {format(new Date(t.date), "dd/MM/yyyy HH:mm")}
                                   {" "}
-                                  por {collaborator?.name}
+                                  por {creatorName}
                                 </div>
                               )}
                             </div>

@@ -6,7 +6,7 @@ import { QueryProvider } from "@/components/layout/query-provider";
 
 export const metadata: Metadata = {
   title: "Benny's gestão",
-  description: "A basic ERP for small businesses",
+  description: "Benny`s gestao de relatorios e colaboradores",
 };
 
 export default function RootLayout({

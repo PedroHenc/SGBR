@@ -97,6 +97,7 @@ export default async function DashboardPage() {
             categories[0]?.id ||
             "1",
           collaboratorId: String(r.beneiro_id),
+          createdBy: r.created_by,
         }))
         .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     }
