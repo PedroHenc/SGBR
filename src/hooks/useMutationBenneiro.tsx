@@ -1,6 +1,7 @@
 import {
   deleteBenneiro,
   getBenneiros,
+  getRelatorios,
   postBenneiro,
   putBenneiro,
 } from "@/services/sgbr-api";
@@ -9,6 +10,13 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const useMutationBenneiro = () => {
   const queryClient = useQueryClient();
+
+  const getRelaotiriosMutate = useMutation({
+    mutationFn: getRelatorios,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["relatorios"] });
+    },
+  });
 
   const getBenneirosMutate = useMutation({
     mutationFn: getBenneiros,
@@ -39,6 +47,7 @@ const useMutationBenneiro = () => {
   });
 
   return {
+    getRelatorios: getRelaotiriosMutate,
     getBenneiro: getBenneirosMutate,
     postBenneiro: postBenneiroMutate,
     putBenneiro: putBenneiroMutate,

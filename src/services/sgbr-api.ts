@@ -1,10 +1,14 @@
 import axios from "axios";
-import { benneiro } from "./types";
+import { benneiro, Relatorios } from "./types";
 
 const api = axios.create({
   // baseURL: "http://localhost:8080",
   baseURL: "https://sgbr-api.up.railway.app/",
 });
+
+export function getRelatorios() {
+  return api.get<Relatorios[]>("/relatorios")
+}
 
 export function getBenneiros() {
   return api.get("/benneiros");
