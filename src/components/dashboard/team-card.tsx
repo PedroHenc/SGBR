@@ -20,16 +20,15 @@ interface TeamCardProps {
 }
 
 export function TeamCard({ collaborators, transactions }: TeamCardProps) {
-  const getReportCount = (collaboratorId: string) => {
-    return transactions.filter((t) => t.collaboratorId === collaboratorId)
-      .length;
+  const getReportCount = (collaboratorName: string) => {
+    return transactions.filter((t) => t.createdBy === collaboratorName).length;
   };
 
   const topCollaborators = useMemo(() => {
     return collaborators
       .map((c) => ({
         ...c,
-        reportCount: getReportCount(c.id),
+        reportCount: getReportCount(c.name),
       }))
       .sort((a, b) => b.reportCount - a.reportCount)
       .slice(0, 5);
