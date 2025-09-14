@@ -130,7 +130,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           <div className="flex flex-1 items-center justify-end">
             <Button asChild color="red" size="lg">
               <a
-                href="https://google.com"
+                href="https://relatorios-bene.vercel.app/"
                 target="_blank"
                 rel="noopener noreferrer"
               >
