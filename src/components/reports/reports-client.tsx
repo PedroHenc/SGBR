@@ -52,20 +52,21 @@ export function ReportsClient(
   >(null);
 
   const [currentPage, setCurrentPage] = useState(1);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+    const parsedTransactions = initialTransactions
+      .map((t) => ({ ...t, date: new Date(t.date) }))
+      .sort((a, b) => b.date.getTime() - a.date.getTime());
+    setTransactions(parsedTransactions);
+  }, [initialTransactions]);
+
   const totalPages = Math.ceil(transactions.length / ITEMS_PER_PAGE);
   const paginatedTransactions = transactions.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE,
   );
-
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-    setTransactions(
-      initialTransactions.map((t) => ({ ...t, date: new Date(t.date) })),
-    );
-  }, [initialTransactions]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("pt-BR", {

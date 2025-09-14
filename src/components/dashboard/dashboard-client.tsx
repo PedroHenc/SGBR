@@ -87,9 +87,10 @@ export function DashboardClient(
 
   useEffect(() => {
     setIsClient(true);
-    setTransactions(
-      initialTransactions.map((t) => ({ ...t, date: new Date(t.date) })),
-    );
+    const parsedTransactions = initialTransactions
+      .map((t) => ({ ...t, date: new Date(t.date) }))
+      .sort((a, b) => b.date.getTime() - a.date.getTime());
+    setTransactions(parsedTransactions);
   }, [initialTransactions]);
 
   const { totalExpenses } = useMemo(() => {
@@ -127,12 +128,11 @@ export function DashboardClient(
   const handleAddTransaction = (
     newTransaction: Omit<Transaction, "id" | "date">,
   ) => {
-    const newId = String(transactions.length + 1);
+    const newId = String(transactions.length + 1 + Math.random());
+    const newTx = { ...newTransaction, id: newId, date: new Date() };
+
     setTransactions((prev) =>
-      [
-        { ...newTransaction, id: newId, date: new Date() },
-        ...prev,
-      ].sort((a, b) => b.date.getTime() - a.date.getTime())
+      [newTx, ...prev].sort((a, b) => b.date.getTime() - a.date.getTime())
     );
     setAnimatedRowId(newId);
     setTimeout(() => setAnimatedRowId(null), 1000);

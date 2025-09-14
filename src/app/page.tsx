@@ -80,26 +80,24 @@ export default async function DashboardPage() {
         color: getConsistentColor(name),
       }));
 
-      transactions = relatoriosData.data
-        .map((r: RelatoriosType) => ({
-          id: String(r.id),
-          type: (r.lucro ?? 0) >= 0 ? "revenue" : "expense",
-          description:
-            `Serviço para ${r.cliente} no veículo ${r.veiculo}` ||
-            "Relatório sem descrição",
-          amount: Math.abs(r.lucro ?? 0),
-          date: (r.created_at
-            ? new Date(r.created_at.replace(" ", "T"))
-            : new Date()
-          ).toISOString(),
-          categoryId:
-            categories.find((c) => c.name === r.categoria)?.id ||
-            categories[0]?.id ||
-            "1",
-          collaboratorId: String(r.beneiro_id),
-          createdBy: r.created_by,
-        }))
-        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      transactions = relatoriosData.data.map((r: RelatoriosType) => ({
+        id: String(r.id),
+        type: (r.lucro ?? 0) >= 0 ? "revenue" : "expense",
+        description:
+          `Serviço para ${r.cliente} no veículo ${r.veiculo}` ||
+          "Relatório sem descrição",
+        amount: Math.abs(r.lucro ?? 0),
+        date: (r.created_at
+          ? new Date(r.created_at.replace(" ", "T"))
+          : new Date()
+        ).toISOString(),
+        categoryId:
+          categories.find((c) => c.name === r.categoria)?.id ||
+          categories[0]?.id ||
+          "1",
+        collaboratorId: String(r.beneiro_id),
+        createdBy: r.created_by,
+      }));
     }
   } catch (error) {
     console.warn("Could not fetch data. Is the API running?", error);
