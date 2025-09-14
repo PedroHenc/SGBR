@@ -83,9 +83,9 @@ export function AddTransactionDialog(
   });
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("pt-BR", {
+    return new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: "BRL",
+      currency: "USD",
     }).format(amount);
   };
 
@@ -179,12 +179,12 @@ export function AddTransactionDialog(
               name="amount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Valor (R$)</FormLabel>
+                  <FormLabel>Valor ($)</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
                       step="0.01"
-                      placeholder="0,00"
+                      placeholder="0.00"
                       {...field}
                     />
                   </FormControl>
