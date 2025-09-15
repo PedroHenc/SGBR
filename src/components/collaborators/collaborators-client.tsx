@@ -36,7 +36,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import useMutationBenneiro from "@/hooks/useMutationBenneiro";
 import type { Collaborator } from "@/lib/types";
-import { cn } from "@/lib/utils";
+import { cn, fileToBase64 } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Edit, Loader2, Plus, Trash2, UploadCloud, X } from "lucide-react";
 import { useRef, useState } from "react";
@@ -78,6 +78,7 @@ export function CollaboratorsClient(
   const { toast } = useToast();
   const [preview, setPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
   const { postBenneiro, deleteBenneiro } = useMutationBenneiro();
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -97,7 +98,6 @@ export function CollaboratorsClient(
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // Gera um novo ID baseado nos IDs atuais
     const maxId = collaborators.length > 0
       ? Math.max(...collaborators.map((c) => Number(c.id)))
       : 0;
@@ -115,7 +115,7 @@ export function CollaboratorsClient(
     postBenneiro.mutate({
       nome: values.name,
       cargo: values.role,
-      foto_perfil: preview || undefined,
+      fotoPerfil: preview || null, 
     });
 
     toast({
@@ -142,23 +142,27 @@ export function CollaboratorsClient(
     const collaborator = collaborators.find((c) => c.id === collaboratorId);
     if (!collaborator) return;
 
-    deleteBenneiro.mutate(Number(collaboratorId), {
-      onSuccess: () => {
-        setCollaborators((prev) => prev.filter((c) => c.id !== collaboratorId));
-        toast({
-          title: "Colaborador Excluído",
-          description: `"${collaborator.name}" foi excluído com sucesso.`,
-        });
+    deleteBenneiro.mutate(
+      { id: Number(collaboratorId) },
+      {
+        onSuccess: () => {
+          setCollaborators((prev) =>
+            prev.filter((c) => c.id !== collaboratorId)
+          );
+          toast({
+            title: "Colaborador Excluído",
+            description: `"${collaborator.name}" foi excluído com sucesso.`,
+          });
+        },
+        onError: () => {
+          toast({
+            title: "Erro ao Excluir",
+            description: `Não foi possível excluir o colaborador "${collaborator.name}".`,
+            variant: "destructive",
+          });
+        },
       },
-      onError: () => {
-        toast({
-          title: "Erro ao Excluir",
-          description:
-            `Não foi possível excluir o colaborador "${collaborator.name}".`,
-          variant: "destructive",
-        });
-      },
-    });
+    );
   };
 
   const openEditDialog = (collaborator: Collaborator) => {
@@ -171,14 +175,22 @@ export function CollaboratorsClient(
     setIsDeleteDialogOpen(true);
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = event.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+      try {
+        const base64String = await fileToBase64(file);
+        setPreview(base64String); // ✅ preview + banco como base64
+      } catch (error) {
+        console.error("Erro ao converter imagem:", error);
+        toast({
+          title: "Erro ao carregar imagem",
+          description: "Não foi possível converter a imagem.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
@@ -331,6 +343,7 @@ export function CollaboratorsClient(
             </Card>
           </div>
 
+          {/* tabela */}
           <div className="md:col-span-3">
             <Card>
               <CardHeader>
@@ -370,8 +383,7 @@ export function CollaboratorsClient(
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() =>
-                              openEditDialog(collaborator)}
+                            onClick={() => openEditDialog(collaborator)}
                           >
                             <Edit className="h-4 w-4" />
                             <span className="sr-only">Editar</span>
