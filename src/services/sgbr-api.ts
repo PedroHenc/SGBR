@@ -7,7 +7,7 @@ const api = axios.create({
 });
 
 export function getRelatorios() {
-  return api.get<Relatorios[]>("/relatorios")
+  return api.get<Relatorios[]>("/relatorios");
 }
 
 export function getBenneiros() {

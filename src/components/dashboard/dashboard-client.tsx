@@ -289,7 +289,8 @@ export function DashboardClient(
                   {transactions.slice(0, 5).map((t) => {
                     const category = getCategory(t.categoryId);
                     const collaborator = getCollaborator(t.collaboratorId);
-                    const creatorName = t.createdBy || collaborator?.name || "N/A";
+                    const creatorName = t.createdBy || collaborator?.name ||
+                      "N/A";
                     return (
                       <TableRow
                         key={t.id}

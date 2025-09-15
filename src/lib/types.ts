@@ -3,6 +3,7 @@ export type TransactionType = "revenue" | "expense";
 export interface Transaction {
   id: string;
   type: TransactionType;
+  created_at?: string;
   description: string;
   amount: number;
   date: Date;

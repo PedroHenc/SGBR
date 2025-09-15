@@ -39,12 +39,12 @@ const useMutationBenneiro = () => {
     },
   });
 
-const delBenneiroMutate = useMutation<any, Error, number>({
-  mutationFn: (id) => deleteBenneiro(id),
-  onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ["benneiros"] });
-  },
-});
+  const delBenneiroMutate = useMutation<any, Error, number>({
+    mutationFn: (id) => deleteBenneiro(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["benneiros"] });
+    },
+  });
   return {
     getRelatorios: getRelaotiriosMutate,
     getBenneiro: getBenneirosMutate,

@@ -115,7 +115,7 @@ export function CollaboratorsClient(
     postBenneiro.mutate({
       nome: values.name,
       cargo: values.role,
-      fotoPerfil: preview || null, 
+      fotoPerfil: preview ? preview.split(",")[1] : null,
     });
 
     toast({
@@ -143,7 +143,7 @@ export function CollaboratorsClient(
     if (!collaborator) return;
 
     deleteBenneiro.mutate(
-      { id: Number(collaboratorId) },
+      Number(collaboratorId),
       {
         onSuccess: () => {
           setCollaborators((prev) =>
@@ -157,7 +157,8 @@ export function CollaboratorsClient(
         onError: () => {
           toast({
             title: "Erro ao Excluir",
-            description: `Não foi possível excluir o colaborador "${collaborator.name}".`,
+            description:
+              `Não foi possível excluir o colaborador "${collaborator.name}".`,
             variant: "destructive",
           });
         },
@@ -368,7 +369,9 @@ export function CollaboratorsClient(
                           <div className="flex items-center gap-3">
                             <Avatar className="h-9 w-9">
                               <AvatarImage
-                                src={collaborator.avatarUrl}
+                                src={collaborator.avatarUrl
+                                  ? `data:image/png;base64,${collaborator.avatarUrl}`
+                                  : undefined}
                                 alt={collaborator.name}
                               />
                               <AvatarFallback>
@@ -383,7 +386,8 @@ export function CollaboratorsClient(
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => openEditDialog(collaborator)}
+                            onClick={() =>
+                              openEditDialog(collaborator)}
                           >
                             <Edit className="h-4 w-4" />
                             <span className="sr-only">Editar</span>

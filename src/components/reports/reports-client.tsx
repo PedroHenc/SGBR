@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Edit, FileDown } from "lucide-react";
+import { AddTransactionDialog } from "@/components/dashboard/add-transaction-dialog";
+import { EditTransactionDialog } from "@/components/dashboard/edit-transaction-dialog";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -19,11 +20,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { AddTransactionDialog } from "@/components/dashboard/add-transaction-dialog";
-import { EditTransactionDialog } from "@/components/dashboard/edit-transaction-dialog";
 import type { Category, Collaborator, Transaction } from "@/lib/types";
 import { format } from "date-fns";
+import { Edit, FileDown } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 type SerializableTransaction = Omit<Transaction, "date"> & { date: string };
@@ -114,13 +114,15 @@ export function ReportsClient(
       "Categoria",
       "Colaborador",
     ].join(",");
+
     const csvBody = transactions.map((t) => {
       const category = getCategory(t.categoryId);
+      const createdAt = t.created_at ? new Date(t.created_at) : new Date();
       return [
         `"${t.description.replace(/"/g, '""')}"`,
         t.type === "revenue" ? "Receita" : "Despesa",
         t.amount,
-        format(t.date, "yyyy-MM-dd HH:mm"),
+        format(createdAt, "yyyy-MM-dd HH:mm"),
         `"${category?.name.replace(/"/g, '""') || "Sem categoria"}"`,
         `"${t.createdBy || getCollaborator(t.collaboratorId)?.name || "N/A"}"`,
       ].join(",");
@@ -204,8 +206,8 @@ export function ReportsClient(
                 {paginatedTransactions.map((t) => {
                   const category = getCategory(t.categoryId);
                   const collaborator = getCollaborator(t.collaboratorId);
-                  const creatorName =
-                    t.createdBy || collaborator?.name || "N/A";
+                  const creatorName = t.createdBy || collaborator?.name ||
+                    "N/A";
                   return (
                     <TableRow key={t.id}>
                       <TableCell>
@@ -242,7 +244,14 @@ export function ReportsClient(
                       </TableCell>
                       <TableCell>
                         {isClient && (
-                          <span>{format(t.date, "dd/MM/yyyy HH:mm")}</span>
+                          <span>
+                            {t.created_at
+                              ? format(
+                                new Date(t.created_at),
+                                "dd/MM/yyyy HH:mm",
+                              )
+                              : "N/A"}
+                          </span>
                         )}
                       </TableCell>
                       <TableCell
