@@ -3,6 +3,7 @@ import { ReportsClient } from "@/components/reports/reports-client";
 import type { Category, Collaborator, Transaction } from "@/lib/types";
 import { getBenneiro, getRelatorios } from "@/services/sgbr-api";
 import type { benneiro, Relatorios as RelatoriosType } from "@/services/types";
+import { parse } from "date-fns";
 
 const colorPalette = [
   "#1f77b4",
@@ -40,6 +41,7 @@ export default async function ReportsPage() {
   let transactions: (Omit<Transaction, "date"> & { date: string })[] = [];
   let collaborators: Collaborator[] = [];
 
+  
   try {
     const [benneiroData, relatoriosData] = await Promise.all([
       getBenneiro(),
@@ -86,9 +88,7 @@ export default async function ReportsPage() {
         description: `Serviço para ${r.cliente} no veículo ${r.veiculo}` ||
           "Relatório sem descrição",
         amount: Math.abs(r.lucro ?? 0),
-        date:
-          (r.created_at ? new Date(r.created_at.replace(" ", "T")) : new Date())
-            .toISOString(),
+        date: (r.created_at ? parse(r.created_at, "yyyy-MM-dd HH:mm:ss", new Date()) : new Date()).toISOString(),
         categoryId: categories.find((c) => c.name === r.categoria)?.id ||
           categories[0]?.id ||
           "1",
