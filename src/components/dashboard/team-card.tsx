@@ -59,7 +59,7 @@ export function TeamCard({ collaborators, transactions }: TeamCardProps) {
             <div className="flex items-center gap-4">
               <Avatar className="hidden h-9 w-9 sm:flex">
                 <AvatarImage
-                  src={collaborator.avatarUrl}
+                  src={collaborator.fotoPerfil}
                   alt={collaborator.name}
                   data-ai-hint="person face"
                 />

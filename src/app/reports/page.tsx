@@ -54,7 +54,7 @@ export default async function ReportsPage() {
           id: String(b.id),
           name: b.nome,
           role: b.cargo,
-          avatarUrl: b.foto_perfil,
+          avatarUrl: b.fotoPerfil,
         }))
         .sort((a, b) => {
           const roleAIndex = availableRoles.indexOf(a.role);

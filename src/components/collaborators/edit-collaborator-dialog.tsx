@@ -78,9 +78,9 @@ export function EditCollaboratorDialog(
       form.reset({
         name: collaborator.name,
         role: collaborator.role,
-        avatarUrl: collaborator.avatarUrl,
+        avatarUrl: collaborator.fotoPerfil,
       });
-      setPreview(collaborator.avatarUrl || null);
+      setPreview(collaborator.fotoPerfil || null);
     }
   }, [collaborator, form]);
 
@@ -99,7 +99,7 @@ export function EditCollaboratorDialog(
           onEditCollaborator({
             ...collaborator,
             ...values,
-            avatarUrl: preview || undefined,
+            fotoPerfil: preview || undefined,
           });
           toast({
             title: "Colaborador Atualizado",

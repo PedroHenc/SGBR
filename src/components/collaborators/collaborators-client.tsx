@@ -107,7 +107,7 @@ export function CollaboratorsClient(
       id: newId.toString(),
       name: values.name,
       role: values.role,
-      avatarUrl: preview || undefined,
+      fotoPerfil: preview || undefined,
     };
 
     setCollaborators((prev) => [newCollaborator, ...prev]);
@@ -369,8 +369,8 @@ export function CollaboratorsClient(
                           <div className="flex items-center gap-3">
                             <Avatar className="h-9 w-9">
                               <AvatarImage
-                                src={collaborator.avatarUrl
-                                  ? `data:image/png;base64,${collaborator.avatarUrl}`
+                                src={collaborator.fotoPerfil
+                                  ? `data:image/png;base64,${collaborator.fotoPerfil}`
                                   : undefined}
                                 alt={collaborator.name}
                               />
